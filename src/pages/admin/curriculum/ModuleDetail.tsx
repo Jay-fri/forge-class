@@ -4,6 +4,7 @@ import { supabase } from '../../../lib/supabase'
 import { slugify } from '../../../lib/slug'
 import type { Database } from '../../../lib/database.types'
 import { Breadcrumbs } from '../../../components/admin/Breadcrumbs'
+import { AssignmentEditor } from '../../../components/admin/AssignmentEditor'
 import { SpinnerIcon } from '../../../components/icons'
 
 type Track = Database['public']['Tables']['tracks']['Row']
@@ -274,6 +275,10 @@ export function ModuleDetail() {
             </div>
           </Link>
         ))}
+      </div>
+
+      <div className="mt-8">
+        <AssignmentEditor parentType="module" parentId={module.id} />
       </div>
     </div>
   )

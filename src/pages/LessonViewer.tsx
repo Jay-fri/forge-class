@@ -36,6 +36,7 @@ export function LessonViewer() {
   const [lesson, setLesson] = useState<Lesson | null>(null)
   const [sections, setSections] = useState<Section[]>([])
   const [quizzesBySection, setQuizzesBySection] = useState<Map<string, Quiz[]>>(new Map())
+  const [assignmentId, setAssignmentId] = useState<string | null>(null)
   const [notFound, setNotFound] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -88,6 +89,13 @@ export function LessonViewer() {
         return
       }
       setLesson(lessonRow)
+
+      const { data: assignmentRow } = await supabase
+        .from('assignments')
+        .select('id')
+        .eq('lesson_id', lessonRow.id)
+        .maybeSingle()
+      setAssignmentId(assignmentRow?.id ?? null)
 
       const { data: sectionRows } = await supabase
         .from('sections')
@@ -212,9 +220,21 @@ export function LessonViewer() {
         </motion.div>
         <h1 className="font-heading text-2xl text-text">Lesson complete</h1>
         <p className="text-text-secondary">Nice work, {lesson.title} is done.</p>
+        {assignmentId && (
+          <Link
+            to={`/learn/assignment/${assignmentId}`}
+            className="mt-2 rounded-lg bg-accent px-5 py-2.5 font-medium text-background hover:opacity-90"
+          >
+            View assignment
+          </Link>
+        )}
         <Link
           to="/learn"
-          className="mt-2 rounded-lg bg-accent px-5 py-2.5 font-medium text-background hover:opacity-90"
+          className={
+            assignmentId
+              ? 'text-sm text-text-secondary hover:text-text hover:underline'
+              : 'mt-2 rounded-lg bg-accent px-5 py-2.5 font-medium text-background hover:opacity-90'
+          }
         >
           Back to Learn
         </Link>

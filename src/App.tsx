@@ -14,9 +14,11 @@ import { LessonViewer } from './pages/LessonViewer'
 import { Practice } from './pages/Practice'
 import { Progress } from './pages/Progress'
 import { AskAI } from './pages/AskAI'
+import { AssignmentPage } from './pages/AssignmentPage'
 import { AdminHome } from './pages/admin/AdminHome'
 import { Approvals } from './pages/admin/Approvals'
 import { Bundles } from './pages/admin/Bundles'
+import { Grading } from './pages/admin/Grading'
 import { TracksList } from './pages/admin/curriculum/TracksList'
 import { TrackDetail } from './pages/admin/curriculum/TrackDetail'
 import { ModuleDetail } from './pages/admin/curriculum/ModuleDetail'
@@ -66,6 +68,15 @@ function App() {
           />
 
           <Route
+            path="/learn/assignment/:assignmentId"
+            element={
+              <ProtectedRoute role="student">
+                <AssignmentPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
             path="/admin"
             element={
               <ProtectedRoute role="instructor">
@@ -76,6 +87,7 @@ function App() {
             <Route index element={<AdminHome />} />
             <Route path="approvals" element={<Approvals />} />
             <Route path="bundles" element={<Bundles />} />
+            <Route path="grading" element={<Grading />} />
             <Route path="curriculum" element={<TracksList />} />
             <Route path="curriculum/:trackSlug" element={<TrackDetail />} />
             <Route path="curriculum/:trackSlug/:moduleSlug" element={<ModuleDetail />} />

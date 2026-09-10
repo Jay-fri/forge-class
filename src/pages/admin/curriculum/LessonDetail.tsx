@@ -4,6 +4,7 @@ import { supabase } from '../../../lib/supabase'
 import { slugify } from '../../../lib/slug'
 import type { Database } from '../../../lib/database.types'
 import { Breadcrumbs } from '../../../components/admin/Breadcrumbs'
+import { AssignmentEditor } from '../../../components/admin/AssignmentEditor'
 import { Markdown } from '../../../components/content/Markdown'
 import { SpinnerIcon } from '../../../components/icons'
 
@@ -359,6 +360,10 @@ export function LessonDetail() {
             </div>
           ),
         )}
+      </div>
+
+      <div className="mt-8">
+        <AssignmentEditor parentType="lesson" parentId={lesson.id} />
       </div>
     </div>
   )

@@ -2,14 +2,17 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import type { Database } from '../lib/database.types'
-import { BookIcon, CheckCircleIcon, SpinnerIcon } from '../components/icons'
+import { BookIcon, CheckCircleIcon, PencilIcon, SpinnerIcon } from '../components/icons'
 
 type Track = Database['public']['Tables']['tracks']['Row']
 type Module = Database['public']['Tables']['modules']['Row']
 type Lesson = Database['public']['Tables']['lessons']['Row']
 
 interface TrackTree extends Track {
-  modules: (Module & { lessons: (Lesson & { completed: boolean })[] })[]
+  modules: (Module & {
+    lessons: (Lesson & { completed: boolean })[]
+    assignmentId: string | null
+  })[]
 }
 
 export function Learn() {
@@ -22,13 +25,19 @@ export function Learn() {
         data: { user },
       } = await supabase.auth.getUser()
 
-      const [{ data: trackRows }, { data: moduleRows }, { data: lessonRows }, { data: allSections }] =
-        await Promise.all([
-          supabase.from('tracks').select('*').order('order_index'),
-          supabase.from('modules').select('*').order('order_index'),
-          supabase.from('lessons').select('*').order('order_index'),
-          supabase.from('sections').select('id, lesson_id'),
-        ])
+      const [
+        { data: trackRows },
+        { data: moduleRows },
+        { data: lessonRows },
+        { data: allSections },
+        { data: moduleAssignments },
+      ] = await Promise.all([
+        supabase.from('tracks').select('*').order('order_index'),
+        supabase.from('modules').select('*').order('order_index'),
+        supabase.from('lessons').select('*').order('order_index'),
+        supabase.from('sections').select('id, lesson_id'),
+        supabase.from('assignments').select('id, module_id').not('module_id', 'is', null),
+      ])
 
       const { data: progressRows } = user
         ? await supabase
@@ -64,6 +73,8 @@ export function Learn() {
             lessons: (lessonRows ?? [])
               .filter((l) => l.module_id === m.id)
               .map((l) => ({ ...l, completed: completedLessonIds.has(l.id) })),
+            assignmentId:
+              (moduleAssignments ?? []).find((a) => a.module_id === m.id)?.id ?? null,
           })),
       }))
       setTracks(tree)
@@ -123,6 +134,15 @@ export function Learn() {
                       </Link>
                     ))}
                   </div>
+                  {module.assignmentId && (
+                    <Link
+                      to={`/learn/assignment/${module.assignmentId}`}
+                      className="mt-2 flex items-center gap-2 text-sm text-accent hover:underline"
+                    >
+                      <PencilIcon size={14} />
+                      Module assignment
+                    </Link>
+                  )}
                 </div>
               ))}
             </div>

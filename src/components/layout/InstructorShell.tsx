@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   BookIcon,
+  CheckCircleIcon,
   ChevronLeftIcon,
   ForgeMark,
   HomeIcon,
@@ -18,6 +19,7 @@ const navItems = [
   { to: '/admin/approvals', label: 'Approvals', icon: InboxIcon, end: false },
   { to: '/admin/bundles', label: 'Bundles & Pricing', icon: PriceTagIcon, end: false },
   { to: '/admin/curriculum', label: 'Curriculum', icon: BookIcon, end: false },
+  { to: '/admin/grading', label: 'Grading', icon: CheckCircleIcon, end: false },
 ]
 
 /**

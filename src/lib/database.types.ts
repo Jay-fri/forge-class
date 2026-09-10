@@ -1,5 +1,5 @@
 // Hand-written to match the migrations under supabase/migrations/, through
-// 20260910120000_phase4_progress_motivation.sql.
+// 20260910130000_phase5_assignments.sql.
 // Regenerate with `supabase gen types typescript --linked` once Docker/CLI
 // access to this project is available, and this file can be replaced.
 
@@ -12,6 +12,8 @@ export type TrackLevel = 'beginner' | 'intermediate' | 'advanced'
 export type ProgressStatus = 'not_started' | 'in_progress' | 'completed'
 export type ContentFeedbackType = 'confusing' | 'typo'
 export type ContentFeedbackStatus = 'open' | 'resolved'
+export type SubmissionType = 'code' | 'file' | 'link'
+export type SubmissionStatus = 'submitted' | 'in_review' | 'graded'
 
 export interface Database {
   public: {
@@ -274,6 +276,51 @@ export interface Database {
           section_id: string
         }
         Update: Partial<Database['public']['Tables']['section_bookmarks']['Row']>
+        Relationships: []
+      }
+      assignments: {
+        Row: {
+          id: string
+          lesson_id: string | null
+          module_id: string | null
+          title: string
+          spec: string
+          starter_code: Record<string, string> | null
+          starter_template: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: Partial<Database['public']['Tables']['assignments']['Row']> & {
+          title: string
+          spec: string
+        }
+        Update: Partial<Database['public']['Tables']['assignments']['Row']>
+        Relationships: []
+      }
+      submissions: {
+        Row: {
+          id: string
+          assignment_id: string
+          student_id: string
+          submission_type: SubmissionType
+          code_content: string | null
+          file_path: string | null
+          link_url: string | null
+          explanation: string | null
+          status: SubmissionStatus
+          score: number | null
+          passed: boolean | null
+          feedback: string | null
+          submitted_at: string
+          graded_at: string | null
+          graded_by: string | null
+        }
+        Insert: Partial<Database['public']['Tables']['submissions']['Row']> & {
+          assignment_id: string
+          student_id: string
+          submission_type: SubmissionType
+        }
+        Update: Partial<Database['public']['Tables']['submissions']['Row']>
         Relationships: []
       }
       user_progress: {

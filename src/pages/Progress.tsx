@@ -7,6 +7,7 @@ import type { Database } from '../lib/database.types'
 import {
   BookmarkIcon,
   FlameIcon,
+  PencilIcon,
   SpinnerIcon,
   TrophyIcon,
 } from '../components/icons'
@@ -14,6 +15,8 @@ import {
 type Badge = Database['public']['Tables']['badges']['Row']
 type Track = Database['public']['Tables']['tracks']['Row']
 type Bookmark = Database['public']['Tables']['section_bookmarks']['Row']
+type Submission = Database['public']['Tables']['submissions']['Row']
+type Assignment = Database['public']['Tables']['assignments']['Row']
 
 interface TrackProgress extends Track {
   totalSections: number
@@ -27,6 +30,10 @@ interface BookmarkWithContext extends Bookmark {
   trackSlug: string
 }
 
+interface SubmissionWithAssignment extends Submission {
+  assignmentTitle: string
+}
+
 export function Progress() {
   const { profile } = useAuth()
   const [loading, setLoading] = useState(true)
@@ -35,6 +42,7 @@ export function Progress() {
   const [earnedBadgeIds, setEarnedBadgeIds] = useState<Set<string>>(new Set())
   const [tracks, setTracks] = useState<TrackProgress[]>([])
   const [bookmarks, setBookmarks] = useState<BookmarkWithContext[]>([])
+  const [submissions, setSubmissions] = useState<SubmissionWithAssignment[]>([])
   const [downloadingTrack, setDownloadingTrack] = useState<string | null>(null)
 
   useEffect(() => {
@@ -54,6 +62,7 @@ export function Progress() {
         { data: sectionRows },
         { data: progressRows },
         { data: bookmarkRows },
+        { data: submissionRows },
       ] = await Promise.all([
         supabase.from('streaks').select('current_streak, longest_streak').eq('user_id', user.id).maybeSingle(),
         supabase.from('badges').select('*').order('created_at'),
@@ -72,6 +81,11 @@ export function Progress() {
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false }),
+        supabase
+          .from('submissions')
+          .select('*')
+          .eq('student_id', user.id)
+          .order('submitted_at', { ascending: false }),
       ])
 
       setStreak(
@@ -129,6 +143,23 @@ export function Progress() {
           ]
         }),
       )
+
+      if ((submissionRows ?? []).length > 0) {
+        const assignmentIds = [...new Set((submissionRows ?? []).map((s) => s.assignment_id))]
+        const { data: assignmentRows } = await supabase
+          .from('assignments')
+          .select('id, title')
+          .in('id', assignmentIds)
+        setSubmissions(
+          (submissionRows ?? []).map((s) => ({
+            ...s,
+            assignmentTitle:
+              (assignmentRows as Pick<Assignment, 'id' | 'title'>[] | null)?.find(
+                (a) => a.id === s.assignment_id,
+              )?.title ?? 'Assignment',
+          })),
+        )
+      }
 
       setLoading(false)
     }
@@ -243,6 +274,48 @@ export function Progress() {
                   <p className="text-sm text-text">{bm.sectionTitle ?? 'Untitled section'}</p>
                   {bm.note && <p className="mt-0.5 text-xs text-text-secondary">{bm.note}</p>}
                 </div>
+              </Link>
+            ))}
+          </div>
+        </>
+      )}
+
+      {submissions.length > 0 && (
+        <>
+          <h2 className="mt-8 font-heading text-lg text-text">Assignments</h2>
+          <div className="mt-3 flex flex-col gap-2">
+            {submissions.map((s) => (
+              <Link
+                key={s.id}
+                to={`/learn/assignment/${s.assignment_id}`}
+                className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3 transition-colors hover:border-accent/40"
+              >
+                <div className="flex items-center gap-3">
+                  <PencilIcon className="shrink-0 text-accent" size={16} />
+                  <div>
+                    <p className="text-sm text-text">{s.assignmentTitle}</p>
+                    {s.status === 'graded' && s.feedback && (
+                      <p className="mt-0.5 text-xs text-text-secondary">{s.feedback}</p>
+                    )}
+                  </div>
+                </div>
+                <span
+                  className={`shrink-0 rounded-full border px-2.5 py-1 text-xs capitalize ${
+                    s.status === 'graded'
+                      ? s.passed
+                        ? 'border-success/40 text-success'
+                        : 'border-border text-text-secondary'
+                      : 'border-accent/40 text-accent'
+                  }`}
+                >
+                  {s.status === 'graded'
+                    ? s.passed === true
+                      ? 'Passed'
+                      : s.passed === false
+                        ? 'Needs work'
+                        : 'Graded'
+                    : s.status.replace('_', ' ')}
+                </span>
               </Link>
             ))}
           </div>
