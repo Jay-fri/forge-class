@@ -386,6 +386,8 @@ export function LessonViewer() {
             >
               <AskAiPanel
                 context={{
+                  lessonId: lesson.id,
+                  sectionId: section?.id ?? undefined,
                   lessonTitle: lesson.title,
                   sectionTitle: section?.title ?? undefined,
                   sectionContent: section?.content ?? undefined,

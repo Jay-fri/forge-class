@@ -1,5 +1,5 @@
 // Hand-written to match the migrations under supabase/migrations/, through
-// 20260910150000_phase7_community.sql.
+// 20260910170000_ask_ai_chat_history.sql.
 // Regenerate with `supabase gen types typescript --linked` once Docker/CLI
 // access to this project is available, and this file can be replaced.
 
@@ -332,6 +332,38 @@ export interface Database {
           body: string
         }
         Update: Partial<Database['public']['Tables']['discussion_replies']['Row']>
+        Relationships: []
+      }
+      ai_chats: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          lesson_id: string | null
+          section_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: Partial<Database['public']['Tables']['ai_chats']['Row']> & {
+          user_id: string
+        }
+        Update: Partial<Database['public']['Tables']['ai_chats']['Row']>
+        Relationships: []
+      }
+      ai_messages: {
+        Row: {
+          id: string
+          chat_id: string
+          role: 'user' | 'assistant'
+          content: string
+          created_at: string
+        }
+        Insert: Partial<Database['public']['Tables']['ai_messages']['Row']> & {
+          chat_id: string
+          role: 'user' | 'assistant'
+          content: string
+        }
+        Update: Partial<Database['public']['Tables']['ai_messages']['Row']>
         Relationships: []
       }
       assignments: {
