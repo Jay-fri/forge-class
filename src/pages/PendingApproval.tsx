@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import { formatPrice } from '../lib/bundles'
-import { ForgeMark } from '../components/icons'
+import { BookIcon, ForgeMark, MessageIcon } from '../components/icons'
 import { Markdown } from '../components/content/Markdown'
 
 const WHATSAPP_NUMBER = '2348101593762'
@@ -50,10 +50,10 @@ export function PendingApproval() {
   )
 
   return (
-    <div className="min-h-svh bg-background px-6 py-12">
-      <div className="mx-auto flex max-w-lg flex-col items-center text-center">
-        <ForgeMark className="text-accent" size={36} />
-        <h1 className="mt-4 font-heading text-2xl text-text">
+    <div className="forge-auth min-h-svh bg-background px-5 py-8 sm:px-8 sm:py-14">
+      <div className="forge-card--accent forge-card mx-auto flex max-w-xl flex-col items-center p-6 text-center sm:p-10">
+        <span className="forge-icon-tile h-14 w-14"><ForgeMark className="text-accent" size={31} /></span>
+        <p className="page-kicker mt-5">One last step</p><h1 className="mt-2 font-heading text-4xl text-text">
           Your account is pending approval
         </h1>
         <p className="mt-3 text-text-secondary">
@@ -67,8 +67,9 @@ export function PendingApproval() {
           href={`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-6 rounded-lg bg-accent px-5 py-3 font-medium text-background hover:opacity-90"
+          className="forge-button mt-7 gap-2 px-5 py-3"
         >
+          <MessageIcon size={18} />
           Message us on WhatsApp
         </a>
 
@@ -82,7 +83,7 @@ export function PendingApproval() {
       </div>
 
       {preview && (
-        <div className="mx-auto mt-12 max-w-2xl">
+        <div className="mx-auto mt-10 max-w-2xl">
           <div className="mb-4 flex items-center gap-2">
             <span className="h-px flex-1 bg-border" />
             <span className="text-xs uppercase tracking-wide text-text-secondary">
@@ -91,7 +92,8 @@ export function PendingApproval() {
             <span className="h-px flex-1 bg-border" />
           </div>
 
-          <div className="rounded-2xl border border-border bg-surface p-6">
+          <div className="forge-card p-5 sm:p-7">
+            <div className="mb-4 flex items-center gap-2 text-accent"><span className="forge-icon-tile h-9 w-9"><BookIcon size={17} /></span><p className="forge-panel-label">Preview lesson</p></div>
             {preview.title && (
               <h2 className="mb-3 font-heading text-xl text-text">{preview.title}</h2>
             )}

@@ -39,7 +39,7 @@ export function ContentFeedbackControl({ sectionId }: { sectionId: string }) {
 
   if (open) {
     return (
-      <div className="flex flex-col gap-2">
+      <div className="forge-card flex flex-col gap-2 p-3">
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
@@ -48,21 +48,21 @@ export function ContentFeedbackControl({ sectionId }: { sectionId: string }) {
           }
           rows={2}
           autoFocus
-          className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:border-accent"
+          className="forge-input text-sm"
         />
         <div className="flex gap-2">
           <button
             type="button"
             onClick={() => submit(open)}
             disabled={submitting}
-            className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-background hover:opacity-90 disabled:opacity-60"
+            className="forge-button min-h-0 px-3 py-1.5 text-sm disabled:opacity-60"
           >
             {submitting ? 'Sending…' : 'Send'}
           </button>
           <button
             type="button"
             onClick={() => setOpen(null)}
-            className="rounded-lg border border-border px-3 py-1.5 text-sm text-text-secondary hover:bg-surface"
+            className="forge-button-secondary min-h-0 px-3 py-1.5 text-sm text-text-secondary"
           >
             Cancel
           </button>
@@ -72,7 +72,7 @@ export function ContentFeedbackControl({ sectionId }: { sectionId: string }) {
   }
 
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-wrap gap-x-4 gap-y-2 border-t border-border pt-4">
       <button
         type="button"
         onClick={() => setOpen('confusing')}

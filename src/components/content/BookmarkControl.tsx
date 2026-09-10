@@ -69,8 +69,8 @@ export function BookmarkControl({ sectionId }: { sectionId: string }) {
   if (loading) return null
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-4">
+    <div className="flex flex-col gap-2 border-t border-border pt-5">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <button
           type="button"
           onClick={toggle}
@@ -100,20 +100,20 @@ export function BookmarkControl({ sectionId }: { sectionId: string }) {
             placeholder="Personal note (only visible to you)"
             rows={2}
             autoFocus
-            className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:border-accent"
+            className="forge-input text-sm"
           />
           <div className="flex gap-2">
             <button
               type="button"
               onClick={saveNote}
-              className="w-fit rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-background hover:opacity-90"
+              className="forge-button min-h-0 w-fit px-3 py-1.5 text-sm"
             >
               Save
             </button>
             <button
               type="button"
               onClick={() => setEditingNote(false)}
-              className="w-fit rounded-lg border border-border px-3 py-1.5 text-sm text-text-secondary hover:bg-background"
+              className="forge-button-secondary min-h-0 w-fit px-3 py-1.5 text-sm text-text-secondary"
             >
               Cancel
             </button>

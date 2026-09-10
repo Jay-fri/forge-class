@@ -16,7 +16,7 @@ export function Toast({ message }: { message: string | null }) {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -40, opacity: 0 }}
             transition={{ type: 'spring', damping: 24, stiffness: 300 }}
-            className="pointer-events-auto flex items-center gap-2 rounded-full border border-accent/30 bg-surface px-4 py-2.5 text-sm text-text shadow-lg"
+            className="pointer-events-auto flex items-center gap-2 rounded-2xl border border-accent/30 bg-surface px-4 py-3 text-sm text-text shadow-2xl shadow-black/35"
           >
             <TrophyIcon className="text-accent" size={18} />
             {message}

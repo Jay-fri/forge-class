@@ -11,9 +11,9 @@ export function QuizCheck({ quiz }: { quiz: Quiz }) {
   const correct = selected === quiz.correct_index
 
   return (
-    <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
-      <p className="text-xs font-medium uppercase tracking-wide text-accent">Quick check</p>
-      <p className="mt-2 font-medium text-text">{quiz.question}</p>
+    <div className="forge-card--accent forge-card p-4 sm:p-5">
+      <p className="page-kicker">Quick check</p>
+      <p className="mt-2 text-lg font-medium text-text">{quiz.question}</p>
 
       <div className="mt-3 flex flex-col gap-2">
         {quiz.options.map((option, i) => {
@@ -31,8 +31,8 @@ export function QuizCheck({ quiz }: { quiz: Quiz }) {
                 showCorrect
                   ? 'border-success/50 bg-success/10 text-success'
                   : showWrong
-                    ? 'border-red-400/40 bg-red-400/10 text-red-300'
-                    : 'border-border bg-surface text-text hover:border-accent/40'
+                    ? 'border-accent/40 bg-accent/10 text-accent'
+                    : 'border-border bg-surface text-text hover:border-accent/60'
               } ${answered ? 'cursor-default' : ''}`}
             >
               {option}

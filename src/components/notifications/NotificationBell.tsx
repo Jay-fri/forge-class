@@ -57,7 +57,7 @@ export function NotificationBell() {
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-label="Notifications"
-        className="relative text-text-secondary hover:text-text"
+        className="forge-icon-tile relative h-9 w-9 rounded-lg text-text-secondary hover:text-text"
       >
         <BellIcon size={20} />
         {unreadCount > 0 && (
@@ -74,10 +74,10 @@ export function NotificationBell() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -4 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-x-4 top-16 z-50 max-h-[70svh] overflow-y-auto rounded-xl border border-border bg-surface shadow-xl lg:absolute lg:inset-x-auto lg:top-full lg:left-0 lg:right-auto lg:mt-2 lg:w-80 lg:max-w-[calc(100vw-2rem)]"
+            className="fixed inset-x-3 top-16 z-50 max-h-[76svh] overflow-y-auto rounded-2xl border border-border bg-surface shadow-2xl shadow-black/40 lg:absolute lg:inset-x-auto lg:top-full lg:left-0 lg:right-auto lg:mt-2 lg:w-96 lg:max-w-[calc(100vw-2rem)]"
           >
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
-              <p className="font-heading text-text">Notifications</p>
+              <div><p className="font-heading text-xl text-text">Notifications</p><p className="forge-panel-label">Your recent activity</p></div>
             </div>
             {notifications.length === 0 ? (
               <p className="px-4 py-8 text-center text-sm text-text-secondary">
@@ -90,7 +90,7 @@ export function NotificationBell() {
                     key={n.id}
                     to={n.link ?? '/home'}
                     onClick={() => setOpen(false)}
-                    className={`flex items-start gap-3 border-b border-border/60 px-4 py-3 last:border-b-0 transition-colors hover:bg-background/40 ${
+                    className={`flex items-start gap-3 border-b border-border/60 px-4 py-4 last:border-b-0 transition-colors hover:bg-background/40 ${
                       n.read_at ? '' : 'bg-accent/5'
                     }`}
                   >

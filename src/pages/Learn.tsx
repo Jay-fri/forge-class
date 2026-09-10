@@ -136,17 +136,17 @@ export function Learn() {
   }
 
   return (
-    <div className="px-5 py-6">
-      <h1 className="font-heading text-2xl text-text">Learn</h1>
-      <p className="mt-1 text-text-secondary">
+    <div className="page-frame">
+      <p className="page-kicker">Track catalog</p><h1 className="page-title">Learn</h1>
+      <p className="page-intro">
         Pick up where you left off, or browse what's available across every track.
       </p>
 
-      <div className="mt-6 flex flex-col gap-6">
+      <div className="mt-8 flex flex-col gap-5">
         {tracks.map((track) => (
           <div
             key={track.id}
-            className={`rounded-2xl border px-4 py-4 sm:px-5 sm:py-5 ${
+            className={`rounded-2xl border px-4 py-5 shadow-lg shadow-black/10 sm:px-6 sm:py-6 ${
               track.unlocked ? 'border-border bg-surface/40' : 'border-border bg-surface/10'
             }`}
           >
@@ -184,13 +184,13 @@ export function Learn() {
               </p>
             )}
 
-            <div className="mt-4 flex flex-col gap-4">
+            <div className="mt-5 flex flex-col gap-5 border-t border-border/70 pt-5">
               {track.modules.map((module) => (
                 <div key={module.id}>
                   <p className="mb-1.5 text-xs uppercase tracking-wide text-text-secondary/70">
                     {module.name}
                   </p>
-                  <div className="grid gap-2 sm:grid-cols-2">
+                  <div className="grid gap-2 lg:grid-cols-2">
                     {module.lessons.map((lesson) => {
                       const reachable = track.unlocked || lesson.is_free_preview
                       const content = (
@@ -226,7 +226,7 @@ export function Learn() {
                         <Link
                           key={lesson.id}
                           to={`/learn/${track.slug}/${module.slug}/${lesson.slug}`}
-                          className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3 transition-colors hover:border-accent/40"
+                          className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 transition-colors hover:border-accent/60 hover:bg-accent/5"
                         >
                           {content}
                         </Link>

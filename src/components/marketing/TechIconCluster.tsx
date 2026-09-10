@@ -13,9 +13,8 @@ import {
 
 type TechIcon = ComponentType<{ size?: number; color?: string; title?: string }>
 
-// Real, official-colored language/framework logos for what each bundle
-// actually covers: a deliberate exception to the custom-icon-set rule,
-// since recognizing the tech is the point here.
+// Technology marks are intentionally official and colored: students should
+// immediately recognize the languages and frameworks represented by a path.
 const techBySlug: Record<string, TechIcon[]> = {
   frontend: [SiHtml5, SiCss, SiReact],
   backend: [SiNodedotjs, SiExpress, SiPostgresql],

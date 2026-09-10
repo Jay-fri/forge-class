@@ -6,12 +6,12 @@
  */
 export function IdeMockup() {
   return (
-    <div className="w-full overflow-hidden rounded-xl border border-border bg-surface shadow-2xl shadow-black/40">
+    <div className="w-full overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl shadow-black/40">
       {/* window chrome */}
       <div className="flex items-center gap-2 border-b border-border bg-background px-4 py-3">
-        <span className="h-2.5 w-2.5 rounded-full bg-[#4a4a4a]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#4a4a4a]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#4a4a4a]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-border" />
+        <span className="h-2.5 w-2.5 rounded-full bg-border" />
+        <span className="h-2.5 w-2.5 rounded-full bg-border" />
         <span className="ml-3 text-xs text-text-secondary">forge / lesson-03.jsx</span>
       </div>
 
@@ -22,7 +22,7 @@ export function IdeMockup() {
             Files
           </p>
           <ul className="flex flex-col gap-1.5 text-text-secondary">
-            <li className="text-text-secondary/70">📁 src</li>
+            <li className="text-text-secondary/70">/ src</li>
             <li className="pl-3 rounded bg-accent/10 px-2 py-1 text-accent">
               App.jsx
             </li>
@@ -96,7 +96,7 @@ export function IdeMockup() {
             Preview
           </p>
           <div className="flex items-center gap-2 rounded-lg border border-border bg-surface px-2.5 py-2">
-            <span className="text-accent">🔥</span>
+            <FlameIcon className="text-accent" size={15} />
             <span className="text-xs text-text">12 day streak</span>
           </div>
         </aside>
@@ -104,3 +104,4 @@ export function IdeMockup() {
     </div>
   )
 }
+import { FlameIcon } from '../icons'

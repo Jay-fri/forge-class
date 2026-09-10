@@ -70,7 +70,7 @@ export function Signup() {
 
   if (confirmationSent) {
     return (
-      <div className="flex min-h-svh flex-col items-center justify-center gap-3 bg-background px-6 text-center">
+      <div className="forge-auth flex min-h-svh flex-col items-center justify-center gap-3 bg-background px-6 text-center">
         <ForgeMark className="text-accent" size={36} />
         <h1 className="font-heading text-2xl text-text">Check your email</h1>
         <p className="max-w-sm text-sm text-text-secondary">
@@ -86,10 +86,12 @@ export function Signup() {
 
   if (step === 'bundle') {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-12">
+      <div className="forge-auth min-h-svh bg-background px-5 py-8 sm:px-8 sm:py-14">
+       <div className="mx-auto max-w-4xl">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <ForgeMark className="text-accent" size={36} />
-          <h1 className="font-heading text-2xl text-text">Pick your bundle</h1>
+          <span className="forge-icon-tile h-12 w-12"><ForgeMark className="text-accent" size={28} /></span>
+          <p className="page-kicker">Step 1 of 2</p>
+          <h1 className="font-heading text-4xl text-text">Pick your bundle</h1>
           <p className="text-sm text-text-secondary">
             You'll see the price now, and payment is arranged over WhatsApp
             after you sign up.
@@ -97,7 +99,7 @@ export function Signup() {
         </div>
 
         {bundlesLoading ? (
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="h-24 animate-pulse rounded-xl border border-border bg-surface" />
             ))}
@@ -109,7 +111,7 @@ export function Signup() {
                 key={b.id}
                 type="button"
                 onClick={() => setBundleId(b.id)}
-                className={`flex flex-col items-start gap-1 rounded-xl border px-4 py-3.5 text-left transition-colors ${
+                className={`flex min-h-32 flex-col items-start gap-2 rounded-2xl border px-4 py-4 text-left transition-colors ${
                   bundleId === b.id
                     ? 'border-accent bg-accent/10'
                     : 'border-border bg-surface hover:border-accent/40'
@@ -136,7 +138,7 @@ export function Signup() {
           type="button"
           disabled={!bundleId}
           onClick={() => setStep('details')}
-          className="mt-8 w-full rounded-lg bg-accent px-4 py-2.5 font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-40 sm:w-auto"
+          className="forge-button mt-8 w-full disabled:opacity-40 sm:w-auto"
         >
           Continue
         </button>
@@ -147,16 +149,16 @@ export function Signup() {
             Log in
           </Link>
         </p>
-      </div>
+       </div></div>
     )
   }
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center bg-background px-6">
-      <div className="w-full max-w-sm">
+    <div className="forge-auth flex min-h-svh flex-col items-center justify-center bg-background px-5 py-8 sm:px-8">
+      <div className="forge-card w-full max-w-md p-5 sm:p-7">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <ForgeMark className="text-accent" size={36} />
-          <h1 className="font-heading text-2xl text-text">Create your account</h1>
+          <span className="forge-icon-tile h-12 w-12"><ForgeMark className="text-accent" size={28} /></span>
+          <p className="page-kicker">Step 2 of 2</p><h1 className="font-heading text-3xl text-text">Create your account</h1>
           {selectedBundle && (
             <p className="text-sm text-text-secondary">
               {selectedBundle.name}:{' '}
@@ -181,7 +183,7 @@ export function Signup() {
               autoComplete="name"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="rounded-lg border border-border bg-surface px-3.5 py-2.5 text-text outline-none focus:border-accent"
+              className="forge-input"
             />
           </label>
 
@@ -193,7 +195,7 @@ export function Signup() {
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="rounded-lg border border-border bg-surface px-3.5 py-2.5 text-text outline-none focus:border-accent"
+              className="forge-input"
             />
           </label>
 
@@ -206,16 +208,16 @@ export function Signup() {
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="rounded-lg border border-border bg-surface px-3.5 py-2.5 text-text outline-none focus:border-accent"
+              className="forge-input"
             />
           </label>
 
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && <p className="text-sm text-accent">{error}</p>}
 
           <button
             type="submit"
             disabled={submitting}
-            className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-60"
+            className="forge-button mt-2 gap-2 disabled:opacity-60"
           >
             {submitting && <SpinnerIcon className="animate-spin" size={16} />}
             Sign up

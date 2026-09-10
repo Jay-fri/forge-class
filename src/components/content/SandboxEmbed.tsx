@@ -16,7 +16,7 @@ export function SandboxEmbed({
     : 'vanilla'
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border">
+    <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-lg shadow-black/10">
       {/* Sandpack's own layout is a fixed-width horizontal split (editor +
           preview) with no built-in responsive stacking. Rather than fight
           its internal CSS, this scrolls horizontally below the breakpoint

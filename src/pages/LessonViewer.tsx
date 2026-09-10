@@ -212,7 +212,7 @@ export function LessonViewer() {
 
   if (showCompletion) {
     return (
-      <div className="flex min-h-svh flex-col items-center justify-center gap-4 bg-background px-6 text-center">
+      <div className="student-view flex min-h-svh flex-col items-center justify-center gap-4 bg-background px-6 text-center">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -226,7 +226,7 @@ export function LessonViewer() {
         {assignmentId && (
           <Link
             to={`/learn/assignment/${assignmentId}`}
-            className="mt-2 rounded-lg bg-accent px-5 py-2.5 font-medium text-background hover:opacity-90"
+          className="forge-button mt-2 px-5"
           >
             View assignment
           </Link>
@@ -236,7 +236,7 @@ export function LessonViewer() {
           className={
             assignmentId
               ? 'text-sm text-text-secondary hover:text-text hover:underline'
-              : 'mt-2 rounded-lg bg-accent px-5 py-2.5 font-medium text-background hover:opacity-90'
+              : 'forge-button mt-2 px-5'
           }
         >
           Back to Learn
@@ -248,20 +248,20 @@ export function LessonViewer() {
   const section = sections[currentIndex]
 
   return (
-    <div className="flex min-h-svh flex-col bg-background">
+    <div className="student-view flex min-h-svh flex-col bg-background">
       <Toast message={badgeToast} />
 
-      <header className="border-b border-border px-4 py-3">
-        <div className="mx-auto flex max-w-2xl items-center gap-3">
-          <Link to="/learn" className="text-text-secondary hover:text-text">
+      <header className="border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
+        <div className="mx-auto flex max-w-4xl items-center gap-3">
+          <Link to="/learn" className="forge-icon-tile h-9 w-9 rounded-lg text-text-secondary hover:text-text">
             <ChevronLeftIcon size={22} />
           </Link>
-          <h1 className="truncate font-heading text-lg text-text">{lesson.title}</h1>
+          <div className="min-w-0"><p className="forge-panel-label">Lesson {currentIndex + 1} of {sections.length}</p><h1 className="truncate font-heading text-xl text-text">{lesson.title}</h1></div>
         </div>
       </header>
 
       <div className="px-4 pt-3">
-        <div className="mx-auto flex max-w-2xl gap-1.5">
+        <div className="mx-auto flex max-w-4xl gap-1.5">
           {sections.map((s, i) => (
             <span
               key={s.id}
@@ -278,7 +278,7 @@ export function LessonViewer() {
       </div>
 
       <main
-        className="flex-1 overflow-y-auto px-5 py-6 pb-28"
+        className="flex-1 overflow-y-auto px-4 py-6 pb-28 sm:px-6 lg:px-10"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
@@ -288,10 +288,10 @@ export function LessonViewer() {
             initial={{ opacity: 0, x: 16 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.25 }}
-            className="mx-auto flex max-w-2xl flex-col gap-5"
+            className="forge-card mx-auto flex max-w-4xl flex-col gap-5 p-5 sm:p-8 lg:p-10"
           >
             {section.title && (
-              <h2 className="font-heading text-xl text-text">{section.title}</h2>
+              <div><p className="page-kicker">Section {currentIndex + 1}</p><h2 className="mt-1 font-heading text-3xl text-text">{section.title}</h2></div>
             )}
             {section.content && <Markdown>{section.content}</Markdown>}
 
@@ -324,12 +324,12 @@ export function LessonViewer() {
           to the reading column's edge on wide screens instead of the raw
           viewport edge, while staying pinned during scroll like a real FAB. */}
       <div className="pointer-events-none fixed inset-0 z-10">
-        <div className="relative mx-auto h-full max-w-2xl">
+        <div className="relative mx-auto h-full max-w-4xl">
           <button
             type="button"
             onClick={() => setDiscussionOpen(true)}
             aria-label="Questions"
-            className="pointer-events-auto absolute bottom-40 right-4 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-surface text-text shadow-lg hover:border-accent/40"
+            className="pointer-events-auto absolute bottom-40 right-4 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-surface text-text shadow-lg hover:border-accent/60"
           >
             <MessageIcon size={20} />
           </button>
@@ -345,7 +345,7 @@ export function LessonViewer() {
       </div>
 
       <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
-        <div className="mx-auto flex max-w-2xl gap-2">
+        <div className="mx-auto flex max-w-4xl gap-2">
           {currentIndex > 0 && (
             <button
               type="button"
@@ -359,7 +359,7 @@ export function LessonViewer() {
           <button
             type="button"
             onClick={goNext}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-accent px-4 py-3 font-medium text-background hover:opacity-90"
+            className="forge-button flex-1 gap-1.5 px-4 py-3"
           >
             {currentIndex === sections.length - 1 ? 'Finish lesson' : 'Continue'}
             <ChevronRightIcon size={18} />

@@ -189,23 +189,23 @@ export function Progress() {
   }
 
   return (
-    <div className="px-5 py-6">
-      <h1 className="font-heading text-2xl text-text">Progress</h1>
+    <div className="page-frame">
+      <p className="page-kicker">Your record</p><h1 className="page-title">Progress</h1>
 
-      <div className="mt-5 grid grid-cols-2 gap-3">
-        <div className="rounded-xl border border-border bg-surface px-4 py-4">
+      <div className="mt-7 grid grid-cols-2 gap-3 lg:max-w-2xl">
+        <div className="forge-card px-4 py-5">
           <FlameIcon className={streak.current > 0 ? 'text-accent' : 'text-text-secondary'} size={22} />
           <p className="mt-2 text-2xl font-medium text-text">{streak.current}</p>
           <p className="text-sm text-text-secondary">Day streak</p>
         </div>
-        <div className="rounded-xl border border-border bg-surface px-4 py-4">
+        <div className="forge-card px-4 py-5">
           <TrophyIcon className="text-accent" size={22} />
           <p className="mt-2 text-2xl font-medium text-text">{earnedBadgeIds.size}</p>
           <p className="text-sm text-text-secondary">Badges earned</p>
         </div>
       </div>
 
-      <h2 className="mt-8 font-heading text-lg text-text">Badges</h2>
+      <h2 className="mt-10 font-heading text-2xl text-text">Badges</h2>
       <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {badges.map((badge) => {
           const earned = earnedBadgeIds.has(badge.id)
@@ -213,7 +213,7 @@ export function Progress() {
             <div
               key={badge.id}
               title={badge.description}
-              className={`flex flex-col items-center gap-1.5 rounded-xl border px-3 py-4 text-center ${
+              className={`flex min-h-32 flex-col items-center justify-center gap-1.5 rounded-2xl border px-3 py-4 text-center ${
                 earned ? 'border-accent/30 bg-accent/5' : 'border-border bg-surface opacity-50'
               }`}
             >
@@ -224,7 +224,7 @@ export function Progress() {
         })}
       </div>
 
-      <h2 className="mt-8 font-heading text-lg text-text">Tracks</h2>
+      <h2 className="mt-10 font-heading text-2xl text-text">Tracks</h2>
       <div className="mt-3 flex flex-col gap-3">
         {tracks.map((track) => {
           const pct =
@@ -233,7 +233,7 @@ export function Progress() {
               : 0
           const complete = track.totalSections > 0 && track.completedSections === track.totalSections
           return (
-            <div key={track.id} className="rounded-xl border border-border bg-surface px-4 py-4">
+            <div key={track.id} className="forge-card px-4 py-4 sm:px-5">
               <div className="flex items-center justify-between">
                 <p className="font-medium text-text">{track.name}</p>
                 <span className="text-sm text-text-secondary">{pct}%</span>
@@ -261,13 +261,13 @@ export function Progress() {
 
       {bookmarks.length > 0 && (
         <>
-          <h2 className="mt-8 font-heading text-lg text-text">Bookmarks</h2>
+          <h2 className="mt-10 font-heading text-2xl text-text">Bookmarks & notes</h2>
           <div className="mt-3 flex flex-col gap-2">
             {bookmarks.map((bm) => (
               <Link
                 key={bm.id}
                 to={`/learn/${bm.trackSlug}/${bm.moduleSlug}/${bm.lessonSlug}`}
-                className="flex items-start gap-3 rounded-xl border border-border bg-surface px-4 py-3 transition-colors hover:border-accent/40"
+                className="forge-card flex items-start gap-3 px-4 py-3.5 transition-colors hover:border-accent/60"
               >
                 <BookmarkIcon className="mt-0.5 shrink-0 text-accent" size={16} filled />
                 <div>
@@ -282,13 +282,13 @@ export function Progress() {
 
       {submissions.length > 0 && (
         <>
-          <h2 className="mt-8 font-heading text-lg text-text">Assignments</h2>
+          <h2 className="mt-10 font-heading text-2xl text-text">Assignment history</h2>
           <div className="mt-3 flex flex-col gap-2">
             {submissions.map((s) => (
               <Link
                 key={s.id}
                 to={`/learn/assignment/${s.assignment_id}`}
-                className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3 transition-colors hover:border-accent/40"
+                className="forge-card flex items-center justify-between gap-3 px-4 py-3.5 transition-colors hover:border-accent/60"
               >
                 <div className="flex items-center gap-3">
                   <PencilIcon className="shrink-0 text-accent" size={16} />

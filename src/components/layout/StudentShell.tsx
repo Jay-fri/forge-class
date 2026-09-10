@@ -33,11 +33,14 @@ export function StudentShell() {
   const { profile, signOut } = useAuth()
 
   return (
-    <div className="flex min-h-svh flex-col bg-background lg:flex-row">
-      <aside className="hidden shrink-0 flex-col border-r border-border lg:flex lg:w-56">
-        <div className="flex items-center gap-2 px-5 py-4">
-          <ForgeMark className="text-accent" size={22} />
-          <span className="font-heading text-lg text-text">Forge</span>
+    <div className="forge-shell flex min-h-svh flex-col bg-background lg:flex-row">
+      <aside className="hidden shrink-0 flex-col border-r border-border bg-background/85 lg:flex lg:w-64">
+        <div className="flex items-center gap-2 px-5 py-5">
+          <span className="forge-icon-tile h-9 w-9 rounded-lg"><ForgeMark className="text-accent" size={21} /></span>
+          <div>
+            <span className="font-heading text-xl leading-none text-text">Forge</span>
+            <p className="font-mono text-[10px] uppercase tracking-[.16em] text-text-secondary">student desk</p>
+          </div>
           <div className="ml-auto flex items-center gap-3">
             <NavLink
               to="/search"
@@ -53,13 +56,13 @@ export function StudentShell() {
             </ErrorBoundary>
           </div>
         </div>
-        <nav className="flex flex-col gap-1 px-3" aria-label="Primary">
+        <nav className="mt-3 flex flex-col gap-1 px-3" aria-label="Primary">
           {tabs.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
               className={({ isActive }) =>
-                `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                `flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-colors ${
                   isActive
                     ? 'bg-accent/10 text-accent'
                     : 'text-text-secondary hover:bg-surface hover:text-text'
@@ -71,16 +74,19 @@ export function StudentShell() {
             </NavLink>
           ))}
         </nav>
-        <div className="mt-auto flex flex-col gap-1 px-3 pb-4">
+        <div className="mt-auto mx-3 mb-4 flex flex-col gap-1 rounded-xl border border-border bg-surface/60 p-2">
           {profile?.full_name && (
-            <p className="truncate px-2 py-2 text-sm text-text-secondary">
-              {profile.full_name}
-            </p>
+            <div className="flex items-center gap-2 px-2 py-1.5">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10 text-xs text-accent">
+                {profile.full_name.slice(0, 1).toUpperCase()}
+              </span>
+              <p className="truncate text-sm text-text-secondary">{profile.full_name}</p>
+            </div>
           )}
           <button
             type="button"
             onClick={() => signOut()}
-            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-text-secondary hover:bg-surface hover:text-text"
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-text-secondary hover:bg-background hover:text-text"
           >
             <LogOutIcon size={20} />
             Log out
@@ -88,10 +94,13 @@ export function StudentShell() {
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center gap-2 border-b border-border px-4 py-3 lg:hidden">
-          <ForgeMark className="text-accent" size={22} />
-          <span className="font-heading text-lg text-text">Forge</span>
+      <div className="flex min-w-0 flex-1 flex-col bg-background/80">
+        <header className="flex items-center gap-2 border-b border-border bg-background/85 px-4 py-3 lg:hidden">
+          <span className="forge-icon-tile h-9 w-9 rounded-lg"><ForgeMark className="text-accent" size={20} /></span>
+          <div>
+            <span className="font-heading text-xl leading-none text-text">Forge</span>
+            <p className="font-mono text-[9px] uppercase tracking-[.14em] text-text-secondary">keep building</p>
+          </div>
           <div className="ml-auto flex items-center gap-3">
             <NavLink
               to="/search"
@@ -109,7 +118,7 @@ export function StudentShell() {
               type="button"
               onClick={() => signOut()}
               aria-label="Log out"
-              className="text-text-secondary hover:text-text"
+              className="forge-icon-tile h-9 w-9 rounded-lg text-text-secondary hover:text-text"
             >
               <LogOutIcon size={20} />
             </button>
@@ -117,14 +126,14 @@ export function StudentShell() {
         </header>
 
         <main className="flex-1 overflow-y-auto pb-24 lg:pb-0">
-          <div className="mx-auto w-full max-w-3xl">
+          <div className="mx-auto w-full max-w-5xl">
             <Outlet />
           </div>
         </main>
       </div>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-10 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-10 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
         aria-label="Primary"
       >
         <ul className="grid grid-cols-5">
@@ -133,7 +142,7 @@ export function StudentShell() {
               <NavLink
                 to={to}
                 className={({ isActive }) =>
-                  `flex flex-col items-center gap-1 py-2.5 text-xs transition-colors ${
+                  `flex flex-col items-center gap-1 py-2.5 text-[11px] transition-colors ${
                     isActive ? 'text-accent' : 'text-text-secondary'
                   }`
                 }

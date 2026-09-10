@@ -26,9 +26,9 @@ export function Search() {
   }, [query])
 
   return (
-    <div className="px-5 py-6">
-      <h1 className="font-heading text-2xl text-text">Search</h1>
-      <p className="mt-1 text-text-secondary">Find anything across the lessons you have access to.</p>
+    <div className="page-frame">
+      <p className="page-kicker">Find your next answer</p><h1 className="page-title">Search</h1>
+      <p className="page-intro">Find anything across the lessons you have access to.</p>
 
       <div className="relative mt-5">
         <SearchIcon size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-secondary" />
@@ -37,7 +37,7 @@ export function Search() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search lessons, sections, topics…"
-          className="w-full rounded-xl border border-border bg-surface py-3 pl-10 pr-4 text-text outline-none focus:border-accent"
+          className="forge-input py-3 pl-10 pr-4"
         />
       </div>
 
@@ -53,7 +53,7 @@ export function Search() {
             <Link
               key={r.key}
               to={r.to}
-              className="flex items-start gap-3 rounded-xl border border-border bg-surface px-4 py-3 transition-colors hover:border-accent/40"
+              className="forge-card flex items-start gap-3 px-4 py-4 transition-colors hover:border-accent/60"
             >
               <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
                 <BookIcon size={16} />

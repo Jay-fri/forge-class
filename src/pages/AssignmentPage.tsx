@@ -129,18 +129,19 @@ export function AssignmentPage() {
   const canEdit = !submission || submission.status === 'submitted'
 
   return (
-    <div className="min-h-svh bg-background">
-      <header className="border-b border-border px-4 py-3">
-        <div className="mx-auto flex max-w-2xl items-center gap-3">
-          <Link to="/learn" className="text-text-secondary hover:text-text">
+    <div className="student-view min-h-svh bg-background">
+      <header className="border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
+        <div className="mx-auto flex max-w-4xl items-center gap-3">
+          <Link to="/learn" className="forge-icon-tile h-9 w-9 rounded-lg text-text-secondary hover:text-text">
             <ChevronLeftIcon size={22} />
           </Link>
-          <h1 className="truncate font-heading text-lg text-text">{assignment.title}</h1>
+          <div><p className="forge-panel-label">Module assignment</p><h1 className="truncate font-heading text-xl text-text">{assignment.title}</h1></div>
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-2xl flex-col gap-5 px-5 py-6">
-        <Markdown>{assignment.spec}</Markdown>
+      <div className="mx-auto grid max-w-6xl gap-5 px-4 py-6 sm:px-6 lg:grid-cols-[.85fr_1.15fr] lg:px-10">
+       <div className="forge-card h-fit p-5 sm:p-7"><p className="page-kicker">The brief</p><div className="mt-4"><Markdown>{assignment.spec}</Markdown></div></div>
+       <div className="flex flex-col gap-5">
 
         {assignment.starter_code && (
           <Suspense
@@ -159,7 +160,7 @@ export function AssignmentPage() {
 
         {submission && (
           <div
-            className={`rounded-xl border px-4 py-3 ${
+            className={`forge-card rounded-xl px-4 py-3 ${
               submission.status === 'graded'
                 ? submission.passed
                   ? 'border-success/40 bg-success/5'
@@ -184,8 +185,8 @@ export function AssignmentPage() {
         )}
 
         {canEdit && (
-          <div className="flex flex-col gap-3">
-            <div className="flex gap-2">
+          <div className="forge-card flex flex-col gap-4 p-5 sm:p-6">
+            <div><p className="forge-panel-label mb-3">Your submission</p><div className="flex gap-2">
               {(['code', 'file', 'link'] as SubmissionType[]).map((t) => (
                 <button
                   key={t}
@@ -200,7 +201,7 @@ export function AssignmentPage() {
                   {t}
                 </button>
               ))}
-            </div>
+            </div></div>
 
             {type === 'code' && (
               <textarea
@@ -208,7 +209,7 @@ export function AssignmentPage() {
                 onChange={(e) => setCodeContent(e.target.value)}
                 rows={10}
                 placeholder="Paste your code here"
-                className="rounded-lg border border-border bg-surface px-3 py-2 font-mono text-sm text-text outline-none focus:border-accent"
+                className="forge-input font-mono text-sm"
               />
             )}
             {type === 'link' && (
@@ -216,7 +217,7 @@ export function AssignmentPage() {
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
                 placeholder="https://your-deployed-project.com"
-                className="rounded-lg border border-border bg-surface px-3.5 py-2.5 text-text outline-none focus:border-accent"
+                className="forge-input"
               />
             )}
             {type === 'file' && (
@@ -232,10 +233,10 @@ export function AssignmentPage() {
               onChange={(e) => setExplanation(e.target.value)}
               rows={3}
               placeholder="Anything you want to explain about your submission (optional)"
-              className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:border-accent"
+              className="forge-input text-sm"
             />
 
-            {error && <p className="text-sm text-red-400">{error}</p>}
+            {error && <p className="text-sm text-accent">{error}</p>}
 
             <button
               type="button"
@@ -246,12 +247,12 @@ export function AssignmentPage() {
                 (type === 'link' && !linkUrl) ||
                 (type === 'file' && !file && !submission?.file_path)
               }
-              className="w-fit rounded-lg bg-accent px-5 py-2.5 font-medium text-background hover:opacity-90 disabled:opacity-50"
+              className="forge-button w-fit disabled:opacity-50"
             >
               {submitting ? 'Submitting…' : submission ? 'Resubmit' : 'Submit assignment'}
             </button>
           </div>
-        )}
+        )}</div>
       </div>
     </div>
   )

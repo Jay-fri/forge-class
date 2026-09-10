@@ -36,11 +36,11 @@ export function Login() {
   }
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center bg-background px-6">
-      <div className="w-full max-w-sm">
+    <div className="forge-auth flex min-h-svh flex-col items-center justify-center bg-background px-5 py-8 sm:px-8">
+      <div className="forge-card w-full max-w-md p-5 sm:p-7">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <ForgeMark className="text-accent" size={36} />
-          <h1 className="font-heading text-2xl text-text">Welcome back</h1>
+          <span className="forge-icon-tile h-12 w-12"><ForgeMark className="text-accent" size={28} /></span>
+          <p className="page-kicker">Your learning space</p><h1 className="font-heading text-3xl text-text">Welcome back</h1>
           <p className="text-sm text-text-secondary">
             Log in to keep building your streak.
           </p>
@@ -55,7 +55,7 @@ export function Login() {
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="rounded-lg border border-border bg-surface px-3.5 py-2.5 text-text outline-none focus:border-accent"
+              className="forge-input"
             />
           </label>
 
@@ -67,16 +67,16 @@ export function Login() {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="rounded-lg border border-border bg-surface px-3.5 py-2.5 text-text outline-none focus:border-accent"
+              className="forge-input"
             />
           </label>
 
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && <p className="text-sm text-accent">{error}</p>}
 
           <button
             type="submit"
             disabled={submitting}
-            className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-60"
+            className="forge-button mt-2 gap-2 disabled:opacity-60"
           >
             {submitting && <SpinnerIcon className="animate-spin" size={16} />}
             Log in

@@ -169,8 +169,8 @@ export function Home() {
   }, [profile])
 
   return (
-    <div className="px-5 py-6">
-      <h1 className="font-heading text-2xl text-text">
+    <div className="page-frame">
+      <p className="page-kicker">Your studio</p><h1 className="page-title">
         Welcome, {profile?.full_name?.split(' ')[0] ?? 'there'}
       </h1>
 
@@ -179,9 +179,10 @@ export function Home() {
           <SpinnerIcon className="animate-spin" size={24} />
         </div>
       ) : (
-        <div className="mt-6 flex flex-col gap-4">
+        <div className="mt-7 grid gap-4 lg:grid-cols-[1.4fr_.6fr]">
+         <div className="flex flex-col gap-4">
           {cohortWarning && (
-            <div className="flex items-start gap-3 rounded-xl border border-accent/40 bg-accent/10 px-4 py-3.5">
+            <div className="forge-card--accent forge-card flex items-start gap-3 px-4 py-3.5">
               <CalendarIcon className="mt-0.5 shrink-0 text-accent" size={20} />
               <div>
                 <p className="font-medium text-text">
@@ -199,7 +200,7 @@ export function Home() {
           )}
 
           {!cohortWarning && daysInactive !== null && daysInactive >= 3 && (
-            <div className="rounded-xl border border-accent/30 bg-accent/5 px-4 py-3.5">
+            <div className="forge-card--accent forge-card px-4 py-3.5">
               <p className="font-medium text-text">It's been {daysInactive} days, welcome back</p>
               <p className="mt-0.5 text-sm text-text-secondary">
                 Pick up right where you left off below.
@@ -208,7 +209,7 @@ export function Home() {
           )}
 
           {!cohortWarning && daysInactive === 1 && streak && streak.current > 0 && (
-            <div className="rounded-xl border border-accent/30 bg-accent/5 px-4 py-3.5">
+            <div className="forge-card--accent forge-card px-4 py-3.5">
               <p className="font-medium text-text">
                 Your {streak.current} day streak is waiting
               </p>
@@ -218,7 +219,7 @@ export function Home() {
             </div>
           )}
 
-          <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3">
+          <div className="forge-card flex items-center gap-3 px-4 py-3">
             <FlameIcon className={streak && streak.current > 0 ? 'text-accent' : 'text-text-secondary'} size={22} />
             <div>
               <p className="font-medium text-text">
@@ -233,7 +234,7 @@ export function Home() {
           {continueTarget && (
             <Link
               to={`/learn/${continueTarget.trackSlug}/${continueTarget.moduleSlug}/${continueTarget.lesson.slug}`}
-              className="flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/5 px-4 py-4 transition-colors hover:border-accent/50"
+            className="forge-card--accent forge-card flex items-center gap-3 px-4 py-5 transition-colors hover:border-accent/70"
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
                 <BookIcon size={18} />
@@ -246,7 +247,7 @@ export function Home() {
           )}
 
           {allCaughtUp && (
-            <div className="rounded-xl border border-success/30 bg-success/5 px-4 py-4 text-text">
+            <div className="forge-card rounded-xl border-success/30 bg-success/5 px-4 py-4 text-text">
               You're all caught up. New lessons will show up here as they're added.
             </div>
           )}
@@ -261,7 +262,7 @@ export function Home() {
                   <div
                     key={badge.id}
                     title={badge.description}
-                    className="flex flex-col items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-3 text-center"
+                  className="forge-card flex flex-1 flex-col items-center gap-1.5 px-3 py-3 text-center"
                   >
                     <TrophyIcon className="text-accent" size={20} />
                     <span className="text-xs text-text-secondary">{badge.name}</span>
@@ -270,6 +271,11 @@ export function Home() {
               </div>
             </div>
           )}
+         </div>
+         <aside className="forge-card hidden p-5 lg:flex lg:flex-col lg:justify-between">
+          <div><p className="forge-panel-label">A small win today</p><p className="mt-3 font-heading text-2xl text-text">One section is enough to keep the momentum.</p></div>
+          <div className="mt-8 border-t border-border pt-4"><p className="text-sm text-text-secondary">Come back tomorrow and build on it.</p></div>
+         </aside>
         </div>
       )}
     </div>

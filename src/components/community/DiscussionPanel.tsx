@@ -136,7 +136,7 @@ export function DiscussionPanel({
 
   return (
     <div className="flex h-full flex-col bg-background">
-      <header className="flex items-center gap-2 border-b border-border px-4 py-3">
+      <header className="flex items-center gap-2 border-b border-border bg-surface/70 px-4 py-3">
         {selectedThread ? (
           <button
             onClick={() => setSelectedThread(null)}
@@ -146,7 +146,7 @@ export function DiscussionPanel({
             <ChevronLeftIcon size={20} />
           </button>
         ) : (
-          <MessageIcon className="text-accent" size={20} />
+          <span className="forge-icon-tile h-9 w-9 rounded-lg"><MessageIcon className="text-accent" size={18} /></span>
         )}
         <h2 className="truncate font-heading text-lg text-text">
           {selectedThread ? selectedThread.title : 'Questions'}
@@ -183,7 +183,7 @@ export function DiscussionPanel({
 
             <div className="flex flex-col gap-3 border-t border-border pt-4">
               {replies.map((r) => (
-                <div key={r.id} className="rounded-lg border border-border bg-surface px-3 py-2.5">
+                <div key={r.id} className="rounded-xl border border-border bg-surface px-3 py-3">
                   <div className="flex items-center gap-1.5 text-xs text-text-secondary">
                     {r.authorIsInstructor && <ShieldIcon size={12} className="text-accent" />}
                     {r.authorName} · {new Date(r.created_at).toLocaleDateString()}
@@ -202,26 +202,26 @@ export function DiscussionPanel({
               value={draftTitle}
               onChange={(e) => setDraftTitle(e.target.value)}
               placeholder="What's your question about?"
-              className="rounded-lg border border-border bg-surface px-3 py-2 text-text outline-none focus:border-accent"
+              className="forge-input"
             />
             <textarea
               value={draftBody}
               onChange={(e) => setDraftBody(e.target.value)}
               rows={5}
               placeholder="Add any detail that would help someone answer."
-              className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:border-accent"
+              className="forge-input text-sm"
             />
             <div className="flex gap-2">
               <button
                 onClick={createThread}
                 disabled={saving || !draftTitle.trim() || !draftBody.trim()}
-                className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-background hover:opacity-90 disabled:opacity-50"
+                className="forge-button min-h-0 px-4 py-2 text-sm disabled:opacity-50"
               >
                 {saving ? 'Posting…' : 'Post question'}
               </button>
               <button
                 onClick={() => setCreating(false)}
-                className="rounded-lg border border-border px-4 py-2 text-sm text-text-secondary hover:bg-surface"
+                className="forge-button-secondary min-h-0 px-4 py-2 text-sm text-text-secondary"
               >
                 Cancel
               </button>
@@ -231,7 +231,7 @@ export function DiscussionPanel({
           <div className="flex flex-col gap-2">
             <button
               onClick={() => setCreating(true)}
-              className="mb-2 w-fit rounded-full bg-accent px-4 py-2 text-sm font-medium text-background hover:opacity-90"
+              className="forge-button mb-2 w-fit rounded-full px-4 py-2 text-sm"
             >
               + Ask a question
             </button>
@@ -239,7 +239,7 @@ export function DiscussionPanel({
               <button
                 key={t.id}
                 onClick={() => openThread(t)}
-                className="rounded-xl border border-border bg-surface px-4 py-3 text-left transition-colors hover:border-accent/40"
+                className="forge-card px-4 py-3.5 text-left transition-colors hover:border-accent/60"
               >
                 <p className="text-text">{t.title}</p>
                 <p className="mt-0.5 flex items-center gap-1.5 text-xs text-text-secondary">
@@ -261,18 +261,18 @@ export function DiscussionPanel({
             e.preventDefault()
             sendReply()
           }}
-          className="flex gap-2 border-t border-border p-3"
+          className="flex gap-2 border-t border-border bg-surface/60 p-3"
         >
           <input
             value={replyBody}
             onChange={(e) => setReplyBody(e.target.value)}
             placeholder="Write a reply…"
-            className="flex-1 rounded-lg border border-border bg-surface px-3.5 py-2.5 text-text outline-none focus:border-accent"
+            className="forge-input flex-1"
           />
           <button
             type="submit"
             disabled={saving || !replyBody.trim()}
-            className="rounded-lg bg-accent px-4 font-medium text-background hover:opacity-90 disabled:opacity-40"
+            className="forge-button min-h-0 px-4 disabled:opacity-40"
           >
             Reply
           </button>

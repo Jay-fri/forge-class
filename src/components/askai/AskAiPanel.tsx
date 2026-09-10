@@ -91,7 +91,7 @@ export function AskAiPanel({
 
   return (
     <div className="flex h-full flex-col bg-background">
-      <header className="flex items-center gap-2 border-b border-border px-4 py-3">
+      <header className="flex items-center gap-2 border-b border-border bg-surface/70 px-4 py-3">
         {view === 'history' ? (
           <button
             type="button"
@@ -102,7 +102,7 @@ export function AskAiPanel({
             <ChevronLeftIcon size={20} />
           </button>
         ) : (
-          <SparkleIcon className="text-accent" size={20} />
+          <span className="forge-icon-tile h-9 w-9 rounded-lg"><SparkleIcon className="text-accent" size={18} /></span>
         )}
         <h2 className="truncate font-heading text-lg text-text">
           {view === 'history' ? 'Past chats' : 'Ask AI'}
@@ -164,7 +164,7 @@ export function AskAiPanel({
                 <button
                   key={c.id}
                   onClick={() => openChat(c)}
-                  className="rounded-xl border border-border bg-surface px-4 py-3 text-left transition-colors hover:border-accent/40"
+                  className="forge-card px-4 py-3 text-left transition-colors hover:border-accent/60"
                 >
                   <p className="truncate text-text">{c.title}</p>
                   <p className="mt-0.5 text-xs text-text-secondary">
@@ -179,7 +179,8 @@ export function AskAiPanel({
         <div className="flex-1 overflow-y-auto px-4 py-4">
           {messages.length === 0 && (
             <div className="flex flex-col items-center gap-3 py-10 text-center">
-              <ForgeMark className="text-accent" size={28} />
+              <span className="forge-icon-tile h-12 w-12"><ForgeMark className="text-accent" size={26} /></span>
+              <p className="page-kicker">Your coding copilot</p>
               <p className="max-w-xs text-sm text-text-secondary">
                 Ask anything about this lesson, or get an error explained in plain language.
               </p>
@@ -187,7 +188,7 @@ export function AskAiPanel({
                 <button
                   type="button"
                   onClick={() => send('Explain this differently', 'explain_differently')}
-                  className="rounded-full border border-accent/40 px-3.5 py-1.5 text-sm text-accent hover:bg-accent/10"
+                  className="rounded-full border border-accent/40 px-3.5 py-2 text-sm text-accent hover:bg-accent/10"
                 >
                   Explain this differently
                 </button>
@@ -198,15 +199,15 @@ export function AskAiPanel({
           <div className="flex flex-col gap-3">
             {messages.map((m, i) =>
               m.role === 'user' ? (
-                <div key={i} className="ml-auto max-w-[85%] rounded-2xl rounded-br-sm bg-accent px-3.5 py-2 text-sm text-background">
+                <div key={i} className="ml-auto max-w-[85%] rounded-2xl rounded-br-sm bg-accent px-3.5 py-2.5 text-sm text-background">
                   {m.text}
                 </div>
               ) : m.role === 'error' ? (
-                <div key={i} className="max-w-[85%] rounded-2xl rounded-bl-sm border border-red-400/30 bg-red-400/10 px-3.5 py-2 text-sm text-red-300">
+                <div key={i} className="max-w-[85%] rounded-2xl rounded-bl-sm border border-accent/30 bg-accent/10 px-3.5 py-2 text-sm text-accent">
                   {m.text}
                 </div>
               ) : (
-                <div key={i} className="max-w-[90%] rounded-2xl rounded-bl-sm border border-border bg-surface px-3.5 py-3">
+                <div key={i} className="max-w-[90%] rounded-2xl rounded-bl-sm border border-border bg-surface px-3.5 py-3 shadow-sm shadow-black/20">
                   <Markdown>{m.text}</Markdown>
                 </div>
               ),
@@ -222,17 +223,17 @@ export function AskAiPanel({
       )}
 
       {view === 'chat' && (
-        <form onSubmit={handleSubmit} className="flex gap-2 border-t border-border p-3">
+        <form onSubmit={handleSubmit} className="flex gap-2 border-t border-border bg-surface/60 p-3">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask a question…"
-            className="flex-1 rounded-lg border border-border bg-surface px-3.5 py-2.5 text-text outline-none focus:border-accent"
+            className="forge-input flex-1"
           />
           <button
             type="submit"
             disabled={sending || !input.trim()}
-            className="rounded-lg bg-accent px-4 font-medium text-background hover:opacity-90 disabled:opacity-40"
+            className="forge-button min-h-0 px-4 disabled:opacity-40"
           >
             Send
           </button>

@@ -91,9 +91,9 @@ export function Markdown({ children }: { children: string }) {
             return (
               <div className="my-1 overflow-hidden rounded-lg border border-border">
                 <div className="flex items-center gap-1.5 border-b border-border bg-background px-3 py-2">
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#4a4a4a]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#4a4a4a]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#4a4a4a]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-border" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-border" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-border" />
                   <span className="ml-2 font-mono text-xs text-text-secondary">
                     {language}
                   </span>

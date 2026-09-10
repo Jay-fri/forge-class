@@ -61,4 +61,128 @@
   #root {
     min-height: 100svh;
   }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 32%, transparent);
+    color: var(--color-text);
+  }
+}
+
+/* Student experience primitives. These deliberately only apply when a
+   student/marketing wrapper opts in, leaving the instructor workspace alone. */
+@layer components {
+  .forge-shell {
+    background-image:
+      linear-gradient(to bottom, color-mix(in srgb, var(--color-surface) 42%, transparent) 1px, transparent 1px),
+      linear-gradient(to right, color-mix(in srgb, var(--color-surface) 30%, transparent) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .forge-shell > *, .student-view, .forge-marketing, .forge-auth {
+    position: relative;
+  }
+
+  .page-frame {
+    padding: 1.5rem 1.1rem 2rem;
+  }
+
+  .page-kicker {
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .page-title {
+    margin-top: .18rem;
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+
+  .page-intro {
+    max-width: 38rem;
+    margin-top: .3rem;
+    color: var(--color-text-secondary);
+  }
+
+  .forge-card {
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+    box-shadow: 0 14px 35px rgb(0 0 0 / .12);
+  }
+
+  .forge-card--accent {
+    border-color: color-mix(in srgb, var(--color-accent) 42%, var(--color-border));
+    background: linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 12%, var(--color-surface)), var(--color-surface));
+  }
+
+  .forge-panel-label {
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    font-size: .65rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .forge-icon-tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.55rem;
+    height: 2.55rem;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 27%, var(--color-border));
+    border-radius: .8rem;
+    color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+  }
+
+  .forge-button, .forge-button-secondary {
+    display: inline-flex;
+    min-height: 2.8rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: .7rem;
+    padding: .6rem 1rem;
+    font-weight: 600;
+    transition: transform .18s ease, opacity .18s ease, border-color .18s ease, background .18s ease;
+  }
+
+  .forge-button {
+    background: var(--color-accent);
+    color: var(--color-background);
+  }
+
+  .forge-button-secondary {
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    background: color-mix(in srgb, var(--color-surface) 78%, transparent);
+  }
+
+  .forge-button:hover, .forge-button-secondary:hover {
+    transform: translateY(-1px);
+  }
+
+  .forge-input {
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: .7rem;
+    background: var(--color-surface);
+    padding: .65rem .8rem;
+    color: var(--color-text);
+    outline: none;
+  }
+
+  .forge-input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 13%, transparent);
+  }
+
+  @media (min-width: 640px) {
+    .page-frame { padding: 2rem 2rem 2.5rem; }
+  }
+
+  @media (min-width: 1024px) {
+    .page-frame { padding: 2.5rem 3rem 3rem; }
+  }
 }

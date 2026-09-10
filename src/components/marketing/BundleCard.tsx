@@ -7,11 +7,11 @@ export function BundleCard({ bundle }: { bundle: Bundle }) {
   return (
     <Link
       to={`/signup?bundle=${bundle.slug}`}
-      className="group flex flex-col gap-4 rounded-2xl border border-border bg-surface p-6 transition-colors hover:border-accent/50"
+      className="forge-card group flex min-h-64 flex-col gap-5 p-5 transition-all hover:-translate-y-1 hover:border-accent/60 sm:p-6"
     >
       <div className="flex items-center justify-between">
         <TechIconCluster slug={bundle.slug} />
-        <span className="font-heading text-lg text-text">
+        <span className="rounded-full border border-accent/30 bg-accent/5 px-3 py-1 font-heading text-lg text-accent">
           {formatPrice(bundle.price, bundle.currency)}
         </span>
       </div>
@@ -27,8 +27,8 @@ export function BundleCard({ bundle }: { bundle: Bundle }) {
         <p className="mt-auto text-xs text-text-secondary/80">{bundle.audience}</p>
       )}
 
-      <span className="text-sm font-medium text-accent opacity-0 transition-opacity group-hover:opacity-100">
-        Get started →
+      <span className="text-sm font-medium text-accent transition-transform group-hover:translate-x-1">
+        Start this path →
       </span>
     </Link>
   )
