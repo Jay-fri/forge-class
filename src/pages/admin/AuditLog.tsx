@@ -57,7 +57,7 @@ export function AuditLog() {
 
   return (
     <div className="px-6 py-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-heading text-2xl text-text">Audit log</h1>
           <p className="mt-1 text-text-secondary">Every approval, bundle change, and content edit.</p>
@@ -65,7 +65,7 @@ export function AuditLog() {
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="rounded-lg border border-border bg-surface px-3 py-2 text-sm capitalize text-text"
+          className="shrink-0 rounded-lg border border-border bg-surface px-3 py-2 text-sm capitalize text-text"
         >
           <option value="all">All types</option>
           {entityTypes.map((t) => (
@@ -79,13 +79,13 @@ export function AuditLog() {
       <div className="mt-6 flex flex-col gap-2">
         {visible.map((e) => (
           <div key={e.id} className="rounded-xl border border-border bg-surface px-4 py-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
               <p className="text-text">{actionLabels[e.action] ?? e.action}</p>
-              <p className="text-xs text-text-secondary">
+              <p className="shrink-0 text-xs text-text-secondary">
                 {new Date(e.created_at).toLocaleString()}
               </p>
             </div>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 wrap-break-word text-sm text-text-secondary">
               {e.actorName} · {e.entity_type}
               {e.detail && typeof e.detail === 'object' && (
                 <>

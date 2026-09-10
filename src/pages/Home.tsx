@@ -3,7 +3,16 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Database } from '../lib/database.types'
-import { BookIcon, CalendarIcon, FlameIcon, SpinnerIcon, TrophyIcon } from '../components/icons'
+import {
+  BookIcon,
+  CalendarIcon,
+  ChevronRightIcon,
+  FlameIcon,
+  SparkleIcon,
+  SpinnerIcon,
+  TrendingIcon,
+  TrophyIcon,
+} from '../components/icons'
 
 type Module = Database['public']['Tables']['modules']['Row']
 type Lesson = Database['public']['Tables']['lessons']['Row']
@@ -219,15 +228,21 @@ export function Home() {
             </div>
           )}
 
-          <div className="forge-card flex items-center gap-3 px-4 py-3">
-            <FlameIcon className={streak && streak.current > 0 ? 'text-accent' : 'text-text-secondary'} size={22} />
-            <div>
-              <p className="font-medium text-text">
-                {streak?.current ?? 0} day{streak?.current === 1 ? '' : 's'} streak
-              </p>
-              {streak && streak.longest > streak.current && (
-                <p className="text-xs text-text-secondary">Best: {streak.longest} days</p>
-              )}
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            <div className="forge-card p-3 sm:p-4">
+              <FlameIcon className={streak && streak.current > 0 ? 'text-accent' : 'text-text-secondary'} size={21} />
+              <p className="mt-2 font-heading text-2xl text-text">{streak?.current ?? 0}</p>
+              <p className="text-xs text-text-secondary">day streak</p>
+            </div>
+            <div className="forge-card p-3 sm:p-4">
+              <TrendingIcon className="text-accent" size={21} />
+              <p className="mt-2 font-heading text-2xl text-text">{streak?.longest ?? 0}</p>
+              <p className="text-xs text-text-secondary">best run</p>
+            </div>
+            <div className="forge-card p-3 sm:p-4">
+              <TrophyIcon className="text-accent" size={21} />
+              <p className="mt-2 font-heading text-2xl text-text">{recentBadges.length}</p>
+              <p className="text-xs text-text-secondary">recent wins</p>
             </div>
           </div>
 
@@ -271,10 +286,28 @@ export function Home() {
               </div>
             </div>
           )}
+
+          <div className="grid gap-2 sm:grid-cols-3">
+            <Link to="/learn" className="forge-card group flex items-center gap-3 p-3 transition-colors hover:border-accent/60">
+              <span className="forge-icon-tile h-9 w-9 shrink-0 rounded-lg"><BookIcon size={17} /></span>
+              <span className="min-w-0"><span className="block text-sm text-text">Browse tracks</span><span className="block text-xs text-text-secondary">Find a lesson</span></span>
+              <ChevronRightIcon className="ml-auto text-text-secondary transition-transform group-hover:translate-x-0.5" size={16} />
+            </Link>
+            <Link to="/ask-ai" className="forge-card group flex items-center gap-3 p-3 transition-colors hover:border-accent/60">
+              <span className="forge-icon-tile h-9 w-9 shrink-0 rounded-lg"><SparkleIcon size={17} /></span>
+              <span className="min-w-0"><span className="block text-sm text-text">Ask AI</span><span className="block text-xs text-text-secondary">Work it through</span></span>
+              <ChevronRightIcon className="ml-auto text-text-secondary transition-transform group-hover:translate-x-0.5" size={16} />
+            </Link>
+            <Link to="/progress" className="forge-card group flex items-center gap-3 p-3 transition-colors hover:border-accent/60">
+              <span className="forge-icon-tile h-9 w-9 shrink-0 rounded-lg"><TrendingIcon size={17} /></span>
+              <span className="min-w-0"><span className="block text-sm text-text">See progress</span><span className="block text-xs text-text-secondary">Your record</span></span>
+              <ChevronRightIcon className="ml-auto text-text-secondary transition-transform group-hover:translate-x-0.5" size={16} />
+            </Link>
+          </div>
          </div>
-         <aside className="forge-card hidden p-5 lg:flex lg:flex-col lg:justify-between">
-          <div><p className="forge-panel-label">A small win today</p><p className="mt-3 font-heading text-2xl text-text">One section is enough to keep the momentum.</p></div>
-          <div className="mt-8 border-t border-border pt-4"><p className="text-sm text-text-secondary">Come back tomorrow and build on it.</p></div>
+         <aside className="forge-card--accent forge-card hidden p-6 lg:flex lg:flex-col lg:justify-between">
+          <div><p className="forge-panel-label">Today’s build</p><p className="mt-3 font-heading text-3xl text-text">Show up, write one thing, learn one thing.</p><p className="mt-4 text-sm text-text-secondary">Small sessions compound into the projects you’ll be proud to ship.</p></div>
+          <div className="mt-8 border-t border-accent/20 pt-4"><p className="font-mono text-xs uppercase tracking-[.12em] text-accent">Forge keeps score so you can focus.</p></div>
          </aside>
         </div>
       )}

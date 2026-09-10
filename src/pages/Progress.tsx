@@ -234,9 +234,9 @@ export function Progress() {
           const complete = track.totalSections > 0 && track.completedSections === track.totalSections
           return (
             <div key={track.id} className="forge-card px-4 py-4 sm:px-5">
-              <div className="flex items-center justify-between">
-                <p className="font-medium text-text">{track.name}</p>
-                <span className="text-sm text-text-secondary">{pct}%</span>
+              <div className="flex items-center justify-between gap-3">
+                <p className="min-w-0 truncate font-medium text-text">{track.name}</p>
+                <span className="shrink-0 text-sm text-text-secondary">{pct}%</span>
               </div>
               <div className="mt-2 h-1.5 rounded-full bg-border">
                 <div
@@ -270,9 +270,9 @@ export function Progress() {
                 className="forge-card flex items-start gap-3 px-4 py-3.5 transition-colors hover:border-accent/60"
               >
                 <BookmarkIcon className="mt-0.5 shrink-0 text-accent" size={16} filled />
-                <div>
-                  <p className="text-sm text-text">{bm.sectionTitle ?? 'Untitled section'}</p>
-                  {bm.note && <p className="mt-0.5 text-xs text-text-secondary">{bm.note}</p>}
+                <div className="min-w-0">
+                  <p className="truncate text-sm text-text">{bm.sectionTitle ?? 'Untitled section'}</p>
+                  {bm.note && <p className="mt-0.5 wrap-break-word text-xs text-text-secondary">{bm.note}</p>}
                 </div>
               </Link>
             ))}
@@ -290,12 +290,12 @@ export function Progress() {
                 to={`/learn/assignment/${s.assignment_id}`}
                 className="forge-card flex items-center justify-between gap-3 px-4 py-3.5 transition-colors hover:border-accent/60"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex min-w-0 items-center gap-3">
                   <PencilIcon className="shrink-0 text-accent" size={16} />
-                  <div>
-                    <p className="text-sm text-text">{s.assignmentTitle}</p>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm text-text">{s.assignmentTitle}</p>
                     {s.status === 'graded' && s.feedback && (
-                      <p className="mt-0.5 text-xs text-text-secondary">{s.feedback}</p>
+                      <p className="mt-0.5 truncate text-xs text-text-secondary">{s.feedback}</p>
                     )}
                   </div>
                 </div>

@@ -212,7 +212,9 @@ export function Learn() {
                               <LockIcon size={15} />
                             )}
                           </span>
-                          <span className={reachable ? 'font-medium text-text' : 'text-text-secondary'}>
+                          <span
+                            className={`min-w-0 truncate ${reachable ? 'font-medium text-text' : 'text-text-secondary'}`}
+                          >
                             {lesson.title}
                           </span>
                           {lesson.is_free_preview && !track.unlocked && (

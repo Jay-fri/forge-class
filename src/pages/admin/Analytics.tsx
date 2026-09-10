@@ -194,9 +194,9 @@ export function Analytics() {
           const pct = t.enrolled > 0 ? Math.round((t.completed / t.enrolled) * 100) : 0
           return (
             <div key={t.name} className="rounded-xl border border-border bg-surface px-4 py-3">
-              <div className="flex items-center justify-between">
-                <p className="text-text">{t.name}</p>
-                <span className="text-sm text-text-secondary">
+              <div className="flex items-center justify-between gap-3">
+                <p className="min-w-0 truncate text-text">{t.name}</p>
+                <span className="shrink-0 text-sm text-text-secondary">
                   {t.completed}/{t.enrolled} ({pct}%)
                 </span>
               </div>

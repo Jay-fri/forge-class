@@ -167,9 +167,9 @@ export function Bundles() {
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-text">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-text">
                       {b.name}{' '}
                       {!b.is_active && (
                         <span className="ml-2 rounded bg-background px-1.5 py-0.5 text-xs text-text-secondary">
@@ -183,7 +183,7 @@ export function Bundles() {
                   </div>
                   <button
                     onClick={() => startEdit(b)}
-                    className="rounded-lg border border-border px-3 py-1.5 text-sm text-text-secondary hover:bg-background"
+                    className="shrink-0 rounded-lg border border-border px-3 py-1.5 text-sm text-text-secondary hover:bg-background"
                   >
                     Edit
                   </button>
