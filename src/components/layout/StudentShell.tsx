@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { ErrorBoundary } from '../ErrorBoundary'
 import { NotificationBell } from '../notifications/NotificationBell'
 import {
   BookIcon,
@@ -46,7 +47,9 @@ export function StudentShell() {
             >
               <SearchIcon size={19} />
             </NavLink>
-            <NotificationBell />
+            <ErrorBoundary>
+              <NotificationBell />
+            </ErrorBoundary>
           </div>
         </div>
         <nav className="flex flex-col gap-1 px-3" aria-label="Primary">
@@ -98,7 +101,9 @@ export function StudentShell() {
             >
               <SearchIcon size={20} />
             </NavLink>
-            <NotificationBell />
+            <ErrorBoundary>
+              <NotificationBell />
+            </ErrorBoundary>
             <button
               type="button"
               onClick={() => signOut()}

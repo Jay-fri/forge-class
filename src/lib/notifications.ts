@@ -17,9 +17,18 @@ export async function markNotificationsRead(ids: string[]): Promise<void> {
   await supabase.from('notifications').update({ read_at: new Date().toISOString() }).in('id', ids)
 }
 
+let subscriptionSeq = 0
+
 export function subscribeToNotifications(userId: string, onInsert: (n: Notification) => void) {
+  // The topic includes a per-call sequence number, not just the user id:
+  // React's StrictMode dev double-invoke of this effect fires mount, then
+  // cleanup, then mount again, and removeChannel's unsubscribe is async —
+  // so the second mount can run before the first channel finishes
+  // unsubscribing. Reusing the same topic then hands back that same,
+  // already-subscribed channel object, and .on() throws on it. A unique
+  // topic per call sidesteps the collision entirely.
   const channel = supabase
-    .channel(`notifications:${userId}`)
+    .channel(`notifications:${userId}:${++subscriptionSeq}`)
     .on(
       'postgres_changes',
       { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` },
