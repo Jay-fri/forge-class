@@ -1,0 +1,64 @@
+@import 'tailwindcss';
+
+@import '@fontsource/indie-flower/400.css';
+@import '@fontsource/pangolin/400.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+
+/* Forge brand tokens — see forge-master-build-prompt.md.
+   Indie Flower and Pangolin each ship one weight (400) on Google Fonts —
+   headings use font-weight 700 on top of that 400 file, so bold is a
+   browser-synthesized fake-bold rather than a true bold cut. */
+@theme {
+  --color-background: #0e1210;
+  --color-surface: #171c19;
+  --color-border: #232a24;
+  --color-accent: #d9a75c;
+  --color-success: #8fae7a;
+  --color-text: #f1f0ea;
+  --color-text-secondary: #9ba79b;
+
+  --font-heading: 'Indie Flower', Georgia, serif;
+  --font-body: 'Pangolin', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    /* Pangolin reads smaller than a typical UI sans at the same size, so
+       the root is bumped up a notch — every rem-based size (text-sm,
+       text-lg, headings, …) scales up proportionally from here. */
+    font-size: 18px;
+  }
+
+  body {
+    @apply bg-background text-text font-body antialiased;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading text-text;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  code,
+  pre {
+    @apply font-mono;
+  }
+
+  #root {
+    min-height: 100svh;
+  }
+}
