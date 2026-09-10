@@ -1,21 +1,41 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Database } from '../lib/database.types'
-import { BookIcon, CheckCircleIcon, MessageIcon, PencilIcon, SpinnerIcon } from '../components/icons'
+import { BookIcon, CheckCircleIcon, LockIcon, MessageIcon, PencilIcon, SpinnerIcon } from '../components/icons'
 
 type Track = Database['public']['Tables']['tracks']['Row']
 type Module = Database['public']['Tables']['modules']['Row']
-type Lesson = Database['public']['Tables']['lessons']['Row']
+type Bundle = Database['public']['Tables']['bundles']['Row']
+
+interface CatalogLesson {
+  id: string
+  module_id: string
+  title: string
+  slug: string
+  order_index: number
+  is_free_preview: boolean
+  completed: boolean
+}
 
 interface TrackTree extends Track {
+  unlocked: boolean
+  unlockBundleName: string | null
   modules: (Module & {
-    lessons: (Lesson & { completed: boolean })[]
+    lessons: CatalogLesson[]
     assignmentId: string | null
   })[]
 }
 
+const levelLabel: Record<Track['level'], string> = {
+  beginner: 'Beginner',
+  intermediate: 'Intermediate',
+  advanced: 'Advanced',
+}
+
 export function Learn() {
+  const { profile } = useAuth()
   const [tracks, setTracks] = useState<TrackTree[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -25,19 +45,28 @@ export function Learn() {
         data: { user },
       } = await supabase.auth.getUser()
 
-      const [
-        { data: trackRows },
-        { data: moduleRows },
-        { data: lessonRows },
-        { data: allSections },
-        { data: moduleAssignments },
-      ] = await Promise.all([
-        supabase.from('tracks').select('*').order('order_index'),
-        supabase.from('modules').select('*').order('order_index'),
-        supabase.from('lessons').select('*').order('order_index'),
-        supabase.from('sections').select('id, lesson_id'),
-        supabase.from('assignments').select('id, module_id').not('module_id', 'is', null),
-      ])
+      const [{ data: trackRows }, { data: moduleRows }, { data: bundleTrackRows }, { data: bundleRows }] =
+        await Promise.all([
+          supabase.from('tracks').select('*').order('order_index'),
+          supabase.from('modules').select('*').order('order_index'),
+          supabase.from('bundle_tracks').select('bundle_id, track_id'),
+          supabase.from('bundles').select('*'),
+        ])
+
+      const trackList = trackRows ?? []
+      const moduleList: Module[] = moduleRows ?? []
+      const bundleTracks = bundleTrackRows ?? []
+      const bundles: Bundle[] = bundleRows ?? []
+
+      const trackIds = trackList.map((t) => t.id)
+      const [{ data: catalogLessons }, { data: allSections }, { data: moduleAssignments }] =
+        await Promise.all([
+          trackIds.length
+            ? supabase.rpc('get_catalog_lessons', { p_track_ids: trackIds })
+            : Promise.resolve({ data: [] }),
+          supabase.from('sections').select('id, lesson_id'),
+          supabase.from('assignments').select('id, module_id').not('module_id', 'is', null),
+        ])
 
       const { data: progressRows } = user
         ? await supabase
@@ -57,31 +86,46 @@ export function Learn() {
           completedByLesson.set(s.lesson_id, (completedByLesson.get(s.lesson_id) ?? 0) + 1)
         }
       }
-
-      // A lesson only counts as completed once every one of its sections is.
-      const completedLessonIds = new Set<string>()
-      for (const [lessonId, total] of sectionCountByLesson) {
-        if (total > 0 && completedByLesson.get(lessonId) === total) completedLessonIds.add(lessonId)
+      const isLessonComplete = (lessonId: string) => {
+        const total = sectionCountByLesson.get(lessonId) ?? 0
+        return total > 0 && completedByLesson.get(lessonId) === total
       }
 
-      const tree: TrackTree[] = (trackRows ?? []).map((t) => ({
+      const canAccessTrack = (trackId: string) => {
+        const unlockBundleIds = bundleTracks.filter((bt) => bt.track_id === trackId).map((bt) => bt.bundle_id)
+        if (unlockBundleIds.length === 0) return true
+        return (
+          profile?.approval_status === 'approved' &&
+          !!profile.assigned_bundle_id &&
+          unlockBundleIds.includes(profile.assigned_bundle_id)
+        )
+      }
+
+      const unlockBundleName = (trackId: string) => {
+        const unlockBundleIds = bundleTracks.filter((bt) => bt.track_id === trackId).map((bt) => bt.bundle_id)
+        if (unlockBundleIds.length === 0) return null
+        return bundles.find((b) => unlockBundleIds.includes(b.id))?.name ?? null
+      }
+
+      const tree: TrackTree[] = trackList.map((t) => ({
         ...t,
-        modules: (moduleRows ?? [])
+        unlocked: canAccessTrack(t.id),
+        unlockBundleName: unlockBundleName(t.id),
+        modules: moduleList
           .filter((m) => m.track_id === t.id)
           .map((m) => ({
             ...m,
-            lessons: (lessonRows ?? [])
+            lessons: (catalogLessons ?? [])
               .filter((l) => l.module_id === m.id)
-              .map((l) => ({ ...l, completed: completedLessonIds.has(l.id) })),
-            assignmentId:
-              (moduleAssignments ?? []).find((a) => a.module_id === m.id)?.id ?? null,
+              .map((l) => ({ ...l, completed: isLessonComplete(l.id) })),
+            assignmentId: (moduleAssignments ?? []).find((a) => a.module_id === m.id)?.id ?? null,
           })),
       }))
       setTracks(tree)
       setLoading(false)
     }
     load()
-  }, [])
+  }, [profile])
 
   if (loading) {
     return (
@@ -94,56 +138,109 @@ export function Learn() {
   return (
     <div className="px-5 py-6">
       <h1 className="font-heading text-2xl text-text">Learn</h1>
-      <p className="mt-1 text-text-secondary">Pick up where you left off, or start something new.</p>
+      <p className="mt-1 text-text-secondary">
+        Pick up where you left off, or browse what's available across every track.
+      </p>
 
       <div className="mt-6 flex flex-col gap-6">
         {tracks.map((track) => (
-          <div key={track.id}>
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="font-heading text-lg text-text">{track.name}</h2>
-              <Link
-                to={`/learn/discussion/${track.id}`}
-                className="flex shrink-0 items-center gap-1.5 text-sm text-accent hover:underline"
-              >
-                <MessageIcon size={14} />
-                Questions
-              </Link>
+          <div
+            key={track.id}
+            className={`rounded-2xl border px-4 py-4 sm:px-5 sm:py-5 ${
+              track.unlocked ? 'border-border bg-surface/40' : 'border-border bg-surface/10'
+            }`}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <h2 className="font-heading text-lg text-text">{track.name}</h2>
+                <span className="rounded-full border border-border px-2 py-0.5 text-xs text-text-secondary">
+                  {levelLabel[track.level]}
+                </span>
+                {!track.unlocked && (
+                  <span className="flex items-center gap-1 rounded-full border border-accent/30 bg-accent/5 px-2 py-0.5 text-xs text-accent">
+                    <LockIcon size={11} />
+                    Locked
+                  </span>
+                )}
+              </div>
+              {track.unlocked && (
+                <Link
+                  to={`/learn/discussion/${track.id}`}
+                  className="flex shrink-0 items-center gap-1.5 text-sm text-accent hover:underline"
+                >
+                  <MessageIcon size={14} />
+                  Questions
+                </Link>
+              )}
             </div>
             {track.description && (
-              <p className="mt-0.5 text-sm text-text-secondary">{track.description}</p>
+              <p className="mt-1 text-sm text-text-secondary">{track.description}</p>
+            )}
+            {!track.unlocked && (
+              <p className="mt-1.5 text-sm text-text-secondary">
+                {track.unlockBundleName
+                  ? `Included in ${track.unlockBundleName}. Here's what's inside.`
+                  : "You don't have access to this track yet. Here's what's inside."}
+              </p>
             )}
 
-            <div className="mt-3 flex flex-col gap-4">
+            <div className="mt-4 flex flex-col gap-4">
               {track.modules.map((module) => (
                 <div key={module.id}>
                   <p className="mb-1.5 text-xs uppercase tracking-wide text-text-secondary/70">
                     {module.name}
                   </p>
                   <div className="grid gap-2 sm:grid-cols-2">
-                    {module.lessons.map((lesson) => (
-                      <Link
-                        key={lesson.id}
-                        to={`/learn/${track.slug}/${module.slug}/${lesson.slug}`}
-                        className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3 transition-colors hover:border-accent/40"
-                      >
-                        <span
-                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                            lesson.completed
-                              ? 'bg-success/15 text-success'
-                              : 'bg-accent/10 text-accent'
-                          }`}
-                        >
-                          {lesson.completed ? (
-                            <CheckCircleIcon size={18} />
-                          ) : (
-                            <BookIcon size={16} />
+                    {module.lessons.map((lesson) => {
+                      const reachable = track.unlocked || lesson.is_free_preview
+                      const content = (
+                        <>
+                          <span
+                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                              lesson.completed
+                                ? 'bg-success/15 text-success'
+                                : reachable
+                                  ? 'bg-accent/10 text-accent'
+                                  : 'bg-border/40 text-text-secondary'
+                            }`}
+                          >
+                            {lesson.completed ? (
+                              <CheckCircleIcon size={18} />
+                            ) : reachable ? (
+                              <BookIcon size={16} />
+                            ) : (
+                              <LockIcon size={15} />
+                            )}
+                          </span>
+                          <span className={reachable ? 'font-medium text-text' : 'text-text-secondary'}>
+                            {lesson.title}
+                          </span>
+                          {lesson.is_free_preview && !track.unlocked && (
+                            <span className="ml-auto shrink-0 rounded-full bg-accent/10 px-2 py-0.5 text-xs text-accent">
+                              Preview
+                            </span>
                           )}
-                        </span>
-                        <span className="font-medium text-text">{lesson.title}</span>
-                      </Link>
-                    ))}
+                        </>
+                      )
+                      return reachable ? (
+                        <Link
+                          key={lesson.id}
+                          to={`/learn/${track.slug}/${module.slug}/${lesson.slug}`}
+                          className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3 transition-colors hover:border-accent/40"
+                        >
+                          {content}
+                        </Link>
+                      ) : (
+                        <div
+                          key={lesson.id}
+                          className="flex items-center gap-3 rounded-xl border border-border/60 bg-background px-4 py-3 opacity-70"
+                        >
+                          {content}
+                        </div>
+                      )
+                    })}
                   </div>
-                  {module.assignmentId && (
+                  {module.assignmentId && track.unlocked && (
                     <Link
                       to={`/learn/assignment/${module.assignmentId}`}
                       className="mt-2 flex items-center gap-2 text-sm text-accent hover:underline"

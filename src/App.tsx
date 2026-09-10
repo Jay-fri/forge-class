@@ -10,6 +10,7 @@ import { Signup } from './pages/Signup'
 import { PendingApproval } from './pages/PendingApproval'
 import { Home } from './pages/Home'
 import { Learn } from './pages/Learn'
+import { Search } from './pages/Search'
 import { LessonViewer } from './pages/LessonViewer'
 import { Practice } from './pages/Practice'
 import { Progress } from './pages/Progress'
@@ -61,6 +62,7 @@ function App() {
           >
             <Route path="/home" element={<Home />} />
             <Route path="/learn" element={<Learn />} />
+            <Route path="/search" element={<Search />} />
             <Route path="/practice" element={<Practice />} />
             <Route path="/progress" element={<Progress />} />
             <Route path="/ask-ai" element={<AskAI />} />

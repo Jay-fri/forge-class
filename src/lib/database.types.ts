@@ -1,5 +1,5 @@
 // Hand-written to match the migrations under supabase/migrations/, through
-// 20260910170000_ask_ai_chat_history.sql.
+// 20260910180000_phase8_catalog.sql.
 // Regenerate with `supabase gen types typescript --linked` once Docker/CLI
 // access to this project is available, and this file can be replaced.
 
@@ -452,6 +452,17 @@ export interface Database {
       get_public_profiles: {
         Args: { p_ids: string[] }
         Returns: { id: string; full_name: string | null; role: UserRole }[]
+      }
+      get_catalog_lessons: {
+        Args: { p_track_ids: string[] }
+        Returns: {
+          id: string
+          module_id: string
+          title: string
+          slug: string
+          order_index: number
+          is_free_preview: boolean
+        }[]
       }
     }
     Enums: Record<string, never>
