@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Database } from '../lib/database.types'
-import { BookIcon, FlameIcon, SpinnerIcon, TrophyIcon } from '../components/icons'
+import { BookIcon, CalendarIcon, FlameIcon, SpinnerIcon, TrophyIcon } from '../components/icons'
 
 type Module = Database['public']['Tables']['modules']['Row']
 type Lesson = Database['public']['Tables']['lessons']['Row']
@@ -15,13 +15,28 @@ interface ContinueTarget {
   lesson: Lesson
 }
 
+interface CohortWarning {
+  cohortName: string
+  daysLeft: number
+  ended: boolean
+}
+
+function daysUntil(dateStr: string): number {
+  const target = new Date(`${dateStr}T00:00:00`)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  return Math.round((target.getTime() - today.getTime()) / 86400000)
+}
+
 export function Home() {
   const { profile } = useAuth()
   const [loading, setLoading] = useState(true)
   const [streak, setStreak] = useState<{ current: number; longest: number } | null>(null)
+  const [daysInactive, setDaysInactive] = useState<number | null>(null)
   const [continueTarget, setContinueTarget] = useState<ContinueTarget | null>(null)
   const [recentBadges, setRecentBadges] = useState<Badge[]>([])
   const [allCaughtUp, setAllCaughtUp] = useState(false)
+  const [cohortWarning, setCohortWarning] = useState<CohortWarning | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -31,7 +46,11 @@ export function Home() {
       if (!user) return
 
       const [{ data: streakRow }, { data: badgeRows }] = await Promise.all([
-        supabase.from('streaks').select('current_streak, longest_streak').eq('user_id', user.id).maybeSingle(),
+        supabase
+          .from('streaks')
+          .select('current_streak, longest_streak, last_active_date')
+          .eq('user_id', user.id)
+          .maybeSingle(),
         supabase
           .from('user_badges')
           .select('badges(*)')
@@ -44,9 +63,33 @@ export function Home() {
           ? { current: streakRow.current_streak, longest: streakRow.longest_streak }
           : { current: 0, longest: 0 },
       )
+      if (streakRow?.last_active_date) {
+        setDaysInactive(-daysUntil(streakRow.last_active_date))
+      }
       setRecentBadges(
         ((badgeRows ?? []) as unknown as { badges: Badge }[]).map((b) => b.badges).filter(Boolean),
       )
+
+      if (profile?.assigned_bundle_id) {
+        const { data: memberships } = await supabase
+          .from('cohort_memberships')
+          .select('cohorts(name, end_date)')
+          .eq('student_id', user.id)
+          .eq('bundle_id', profile.assigned_bundle_id)
+        const cohorts = ((memberships ?? []) as unknown as { cohorts: { name: string; end_date: string } }[])
+          .map((m) => m.cohorts)
+          .filter(Boolean)
+        if (cohorts.length > 0) {
+          const soonest = cohorts.reduce((a, b) => (a.end_date < b.end_date ? a : b))
+          const daysLeft = daysUntil(soonest.end_date)
+          const allEnded = cohorts.every((c) => daysUntil(c.end_date) < 0)
+          if (allEnded) {
+            setCohortWarning({ cohortName: soonest.name, daysLeft, ended: true })
+          } else if (daysLeft <= 7) {
+            setCohortWarning({ cohortName: soonest.name, daysLeft, ended: false })
+          }
+        }
+      }
 
       const [
         { data: tracks },
@@ -123,7 +166,7 @@ export function Home() {
       setLoading(false)
     }
     load()
-  }, [])
+  }, [profile])
 
   return (
     <div className="px-5 py-6">
@@ -137,6 +180,44 @@ export function Home() {
         </div>
       ) : (
         <div className="mt-6 flex flex-col gap-4">
+          {cohortWarning && (
+            <div className="flex items-start gap-3 rounded-xl border border-accent/40 bg-accent/10 px-4 py-3.5">
+              <CalendarIcon className="mt-0.5 shrink-0 text-accent" size={20} />
+              <div>
+                <p className="font-medium text-text">
+                  {cohortWarning.ended
+                    ? `${cohortWarning.cohortName} has ended`
+                    : `${cohortWarning.cohortName} ends in ${cohortWarning.daysLeft} day${cohortWarning.daysLeft === 1 ? '' : 's'}`}
+                </p>
+                <p className="mt-0.5 text-sm text-text-secondary">
+                  {cohortWarning.ended
+                    ? 'Access to this cohort\'s tracks is now limited. Reach out on WhatsApp if you need an extension.'
+                    : 'Wrap up what you can before then. Reach out on WhatsApp if you need more time.'}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {!cohortWarning && daysInactive !== null && daysInactive >= 3 && (
+            <div className="rounded-xl border border-accent/30 bg-accent/5 px-4 py-3.5">
+              <p className="font-medium text-text">It's been {daysInactive} days, welcome back</p>
+              <p className="mt-0.5 text-sm text-text-secondary">
+                Pick up right where you left off below.
+              </p>
+            </div>
+          )}
+
+          {!cohortWarning && daysInactive === 1 && streak && streak.current > 0 && (
+            <div className="rounded-xl border border-accent/30 bg-accent/5 px-4 py-3.5">
+              <p className="font-medium text-text">
+                Your {streak.current} day streak is waiting
+              </p>
+              <p className="mt-0.5 text-sm text-text-secondary">
+                Finish a lesson today to keep it going.
+              </p>
+            </div>
+          )}
+
           <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3">
             <FlameIcon className={streak && streak.current > 0 ? 'text-accent' : 'text-text-secondary'} size={22} />
             <div>

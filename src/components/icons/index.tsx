@@ -259,6 +259,15 @@ export function PlusIcon({ className, size = 22 }: IconProps) {
   )
 }
 
+export function BellIcon({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <path d="M6 10.5a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14.5 6 10.5Z" />
+      <path d="M10 19a2 2 0 0 0 4 0" />
+    </svg>
+  )
+}
+
 export function LockIcon({ className, size = 22 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>

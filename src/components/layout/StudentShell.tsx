@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { NotificationBell } from '../notifications/NotificationBell'
 import {
   BookIcon,
   CodeIcon,
@@ -35,15 +36,18 @@ export function StudentShell() {
         <div className="flex items-center gap-2 px-5 py-4">
           <ForgeMark className="text-accent" size={22} />
           <span className="font-heading text-lg text-text">Forge</span>
-          <NavLink
-            to="/search"
-            aria-label="Search"
-            className={({ isActive }) =>
-              `ml-auto text-text-secondary hover:text-text ${isActive ? 'text-accent' : ''}`
-            }
-          >
-            <SearchIcon size={19} />
-          </NavLink>
+          <div className="ml-auto flex items-center gap-3">
+            <NavLink
+              to="/search"
+              aria-label="Search"
+              className={({ isActive }) =>
+                `text-text-secondary hover:text-text ${isActive ? 'text-accent' : ''}`
+              }
+            >
+              <SearchIcon size={19} />
+            </NavLink>
+            <NotificationBell />
+          </div>
         </div>
         <nav className="flex flex-col gap-1 px-3" aria-label="Primary">
           {tabs.map(({ to, label, icon: Icon }) => (
@@ -84,23 +88,26 @@ export function StudentShell() {
         <header className="flex items-center gap-2 border-b border-border px-4 py-3 lg:hidden">
           <ForgeMark className="text-accent" size={22} />
           <span className="font-heading text-lg text-text">Forge</span>
-          <NavLink
-            to="/search"
-            aria-label="Search"
-            className={({ isActive }) =>
-              `ml-auto text-text-secondary hover:text-text ${isActive ? 'text-accent' : ''}`
-            }
-          >
-            <SearchIcon size={20} />
-          </NavLink>
-          <button
-            type="button"
-            onClick={() => signOut()}
-            aria-label="Log out"
-            className="text-text-secondary hover:text-text"
-          >
-            <LogOutIcon size={20} />
-          </button>
+          <div className="ml-auto flex items-center gap-3">
+            <NavLink
+              to="/search"
+              aria-label="Search"
+              className={({ isActive }) =>
+                `text-text-secondary hover:text-text ${isActive ? 'text-accent' : ''}`
+              }
+            >
+              <SearchIcon size={20} />
+            </NavLink>
+            <NotificationBell />
+            <button
+              type="button"
+              onClick={() => signOut()}
+              aria-label="Log out"
+              className="text-text-secondary hover:text-text"
+            >
+              <LogOutIcon size={20} />
+            </button>
+          </div>
         </header>
 
         <main className="flex-1 overflow-y-auto pb-24 lg:pb-0">

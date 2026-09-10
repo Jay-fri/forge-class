@@ -1,5 +1,5 @@
 // Hand-written to match the migrations under supabase/migrations/, through
-// 20260910180000_phase8_catalog.sql.
+// 20260910190000_phase9_notifications.sql.
 // Regenerate with `supabase gen types typescript --linked` once Docker/CLI
 // access to this project is available, and this file can be replaced.
 
@@ -440,6 +440,25 @@ export interface Database {
           user_id: string
         }
         Update: Partial<Database['public']['Tables']['streaks']['Row']>
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          id: string
+          user_id: string
+          type: 'submission_graded' | 'lesson_published'
+          title: string
+          body: string | null
+          link: string | null
+          read_at: string | null
+          created_at: string
+        }
+        Insert: Partial<Database['public']['Tables']['notifications']['Row']> & {
+          user_id: string
+          type: 'submission_graded' | 'lesson_published'
+          title: string
+        }
+        Update: Partial<Database['public']['Tables']['notifications']['Row']>
         Relationships: []
       }
     }
