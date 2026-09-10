@@ -106,6 +106,15 @@ export function LessonDetail() {
     setError(null)
   }
 
+  async function togglePublish() {
+    if (!lesson) return
+    await supabase
+      .from('lessons')
+      .update({ status: lesson.status === 'published' ? 'draft' : 'published' })
+      .eq('id', lesson.id)
+    await load()
+  }
+
   async function saveLesson() {
     if (!lesson) return
     setSaving(true)
@@ -260,18 +269,41 @@ export function LessonDetail() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="font-heading text-2xl text-text">{lesson.title}</h1>
-            {lesson.is_free_preview && (
-              <span className="mt-1 inline-block rounded-full border border-success/40 px-2 py-0.5 text-xs text-success">
-                Free preview
-              </span>
-            )}
+            <div className="mt-1 flex items-center gap-2">
+              {lesson.status === 'published' ? (
+                <span className="inline-block rounded-full border border-success/40 px-2 py-0.5 text-xs text-success">
+                  Published
+                </span>
+              ) : (
+                <span className="inline-block rounded-full border border-accent/40 px-2 py-0.5 text-xs text-accent">
+                  Draft, hidden from students
+                </span>
+              )}
+              {lesson.is_free_preview && (
+                <span className="inline-block rounded-full border border-border px-2 py-0.5 text-xs text-text-secondary">
+                  Free preview
+                </span>
+              )}
+            </div>
           </div>
-          <button
-            onClick={startEditLesson}
-            className="rounded-lg border border-border px-3 py-1.5 text-sm text-text-secondary hover:bg-surface"
-          >
-            Edit lesson
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={togglePublish}
+              className={`rounded-lg border px-3 py-1.5 text-sm ${
+                lesson.status === 'published'
+                  ? 'border-border text-text-secondary hover:bg-surface'
+                  : 'border-accent bg-accent/10 text-accent hover:bg-accent/20'
+              }`}
+            >
+              {lesson.status === 'published' ? 'Unpublish' : 'Publish'}
+            </button>
+            <button
+              onClick={startEditLesson}
+              className="rounded-lg border border-border px-3 py-1.5 text-sm text-text-secondary hover:bg-surface"
+            >
+              Edit lesson
+            </button>
+          </div>
         </div>
       )}
 

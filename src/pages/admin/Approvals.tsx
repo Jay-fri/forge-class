@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { formatPrice, useActiveBundles } from '../../lib/bundles'
-import type { ApprovalStatus } from '../../lib/database.types'
+import type { ApprovalStatus, Database } from '../../lib/database.types'
 import { SpinnerIcon } from '../../components/icons'
+
+type Cohort = Database['public']['Tables']['cohorts']['Row']
 
 interface PendingProfile {
   id: string
@@ -28,20 +30,29 @@ export function Approvals() {
   const [busyId, setBusyId] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [selectedBundle, setSelectedBundle] = useState<Record<string, string>>({})
+  const [selectedCohort, setSelectedCohort] = useState<Record<string, string>>({})
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [cohorts, setCohorts] = useState<Cohort[]>([])
   const [actionError, setActionError] = useState<string | null>(null)
+  const [bulkBusy, setBulkBusy] = useState(false)
 
   async function load() {
     setLoading(true)
-    const { data } = await supabase
-      .from('profiles')
-      .select(
-        'id, full_name, email, approval_status, assigned_bundle_id, created_at, bundles(name, price, currency, whatsapp_group_link)',
-      )
-      .eq('role', 'student')
-      .eq('approval_status', tab)
-      .order('created_at', { ascending: false })
-      .returns<PendingProfile[]>()
+    const [{ data }, { data: cohortRows }] = await Promise.all([
+      supabase
+        .from('profiles')
+        .select(
+          'id, full_name, email, approval_status, assigned_bundle_id, created_at, bundles(name, price, currency, whatsapp_group_link)',
+        )
+        .eq('role', 'student')
+        .eq('approval_status', tab)
+        .order('created_at', { ascending: false })
+        .returns<PendingProfile[]>(),
+      supabase.from('cohorts').select('*').neq('status', 'completed'),
+    ])
     setStudents(data ?? [])
+    setCohorts(cohortRows ?? [])
+    setSelectedIds(new Set())
     setLoading(false)
   }
 
@@ -62,9 +73,44 @@ export function Approvals() {
         whatsapp_group_invited_at: new Date().toISOString(),
       })
       .eq('id', student.id)
-    if (error) setActionError(error.message)
+    if (error) {
+      setActionError(error.message)
+      setBusyId(null)
+      return
+    }
+    const cohortId = selectedCohort[student.id]
+    if (cohortId && bundleId) {
+      const cohort = cohorts.find((c) => c.id === cohortId)
+      const isLate = cohort ? new Date(cohort.start_date) < new Date() : false
+      await supabase.from('cohort_memberships').insert({
+        student_id: student.id,
+        cohort_id: cohortId,
+        bundle_id: bundleId,
+        is_late_join: isLate,
+        late_join_decision: isLate ? 'allow' : null,
+      })
+    }
     setBusyId(null)
     load()
+  }
+
+  async function bulkApprove() {
+    setBulkBusy(true)
+    setActionError(null)
+    for (const id of selectedIds) {
+      const student = students.find((s) => s.id === id)
+      if (student) await approve(student)
+    }
+    setBulkBusy(false)
+  }
+
+  function toggleSelected(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
   }
 
   async function reject(student: PendingProfile) {
@@ -117,6 +163,19 @@ export function Approvals() {
         ))}
       </div>
 
+      {tab === 'pending' && selectedIds.size > 0 && (
+        <div className="mt-4 flex items-center gap-3 rounded-lg border border-accent/30 bg-accent/5 px-4 py-2.5">
+          <span className="text-sm text-text">{selectedIds.size} selected</span>
+          <button
+            onClick={bulkApprove}
+            disabled={bulkBusy}
+            className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-background hover:opacity-90 disabled:opacity-50"
+          >
+            {bulkBusy ? 'Approving…' : 'Approve selected'}
+          </button>
+        </div>
+      )}
+
       <div className="mt-6 flex flex-col gap-3">
         {(loading || bundlesLoading) && (
           <div className="flex justify-center py-10 text-accent">
@@ -130,22 +189,35 @@ export function Approvals() {
           </p>
         )}
 
-        {!loading && !bundlesLoading && students.map((s) => (
+        {!loading && !bundlesLoading && students.map((s) => {
+          const bundleId = selectedBundle[s.id] ?? s.assigned_bundle_id ?? ''
+          const availableCohorts = cohorts.filter((c) => c.bundle_id === bundleId)
+          return (
           <div
             key={s.id}
             className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between"
           >
-            <div>
-              <p className="font-medium text-text">{s.full_name ?? 'Unnamed'}</p>
-              <p className="text-sm text-text-secondary">{s.email}</p>
-              <p className="mt-1 text-xs text-text-secondary">
-                Signed up {new Date(s.created_at).toLocaleDateString()}
-              </p>
+            <div className="flex items-start gap-3">
+              {tab === 'pending' && (
+                <input
+                  type="checkbox"
+                  checked={selectedIds.has(s.id)}
+                  onChange={() => toggleSelected(s.id)}
+                  className="mt-1.5"
+                />
+              )}
+              <div>
+                <p className="font-medium text-text">{s.full_name ?? 'Unnamed'}</p>
+                <p className="text-sm text-text-secondary">{s.email}</p>
+                <p className="mt-1 text-xs text-text-secondary">
+                  Signed up {new Date(s.created_at).toLocaleDateString()}
+                </p>
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
               <select
-                value={selectedBundle[s.id] ?? s.assigned_bundle_id ?? ''}
+                value={bundleId}
                 onChange={(e) =>
                   setSelectedBundle((prev) => ({ ...prev, [s.id]: e.target.value }))
                 }
@@ -158,6 +230,23 @@ export function Approvals() {
                   </option>
                 ))}
               </select>
+
+              {tab === 'pending' && availableCohorts.length > 0 && (
+                <select
+                  value={selectedCohort[s.id] ?? ''}
+                  onChange={(e) =>
+                    setSelectedCohort((prev) => ({ ...prev, [s.id]: e.target.value }))
+                  }
+                  className="rounded-lg border border-border bg-background px-2.5 py-1.5 text-sm text-text"
+                >
+                  <option value="">No cohort</option>
+                  {availableCohorts.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              )}
 
               {tab === 'pending' && (
                 <>
@@ -194,7 +283,8 @@ export function Approvals() {
               )}
             </div>
           </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

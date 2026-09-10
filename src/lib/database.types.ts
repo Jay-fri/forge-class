@@ -1,5 +1,5 @@
 // Hand-written to match the migrations under supabase/migrations/, through
-// 20260910130000_phase5_assignments.sql.
+// 20260910140000_phase6_instructor_dashboard.sql.
 // Regenerate with `supabase gen types typescript --linked` once Docker/CLI
 // access to this project is available, and this file can be replaced.
 
@@ -14,6 +14,8 @@ export type ContentFeedbackType = 'confusing' | 'typo'
 export type ContentFeedbackStatus = 'open' | 'resolved'
 export type SubmissionType = 'code' | 'file' | 'link'
 export type SubmissionStatus = 'submitted' | 'in_review' | 'graded'
+export type ContentStatus = 'draft' | 'published'
+export type InstructorRole = 'owner' | 'grader'
 
 export interface Database {
   public: {
@@ -47,6 +49,7 @@ export interface Database {
           role: UserRole
           approval_status: ApprovalStatus
           assigned_bundle_id: string | null
+          instructor_role: InstructorRole | null
           whatsapp_group_invited_at: string | null
           welcome_video_watched_at: string | null
           created_at: string
@@ -152,6 +155,7 @@ export interface Database {
           slug: string
           order_index: number
           is_free_preview: boolean
+          status: ContentStatus
           created_at: string
           updated_at: string
         }
@@ -276,6 +280,23 @@ export interface Database {
           section_id: string
         }
         Update: Partial<Database['public']['Tables']['section_bookmarks']['Row']>
+        Relationships: []
+      }
+      audit_log: {
+        Row: {
+          id: string
+          actor_id: string | null
+          action: string
+          entity_type: string
+          entity_id: string | null
+          detail: Record<string, unknown> | null
+          created_at: string
+        }
+        Insert: Partial<Database['public']['Tables']['audit_log']['Row']> & {
+          action: string
+          entity_type: string
+        }
+        Update: Partial<Database['public']['Tables']['audit_log']['Row']>
         Relationships: []
       }
       assignments: {

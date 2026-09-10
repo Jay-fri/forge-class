@@ -264,6 +264,11 @@ export function ModuleDetail() {
           >
             <p className="font-medium text-text">{l.title}</p>
             <div className="flex items-center gap-2">
+              {l.status === 'draft' && (
+                <span className="rounded-full border border-accent/40 px-2 py-0.5 text-xs text-accent">
+                  Draft
+                </span>
+              )}
               {l.is_free_preview && (
                 <span className="rounded-full border border-success/40 px-2 py-0.5 text-xs text-success">
                   Free preview

@@ -19,6 +19,12 @@ import { AdminHome } from './pages/admin/AdminHome'
 import { Approvals } from './pages/admin/Approvals'
 import { Bundles } from './pages/admin/Bundles'
 import { Grading } from './pages/admin/Grading'
+import { Cohorts } from './pages/admin/Cohorts'
+import { Students } from './pages/admin/Students'
+import { ContentFeedback } from './pages/admin/ContentFeedback'
+import { Analytics } from './pages/admin/Analytics'
+import { AuditLog } from './pages/admin/AuditLog'
+import { Team } from './pages/admin/Team'
 import { TracksList } from './pages/admin/curriculum/TracksList'
 import { TrackDetail } from './pages/admin/curriculum/TrackDetail'
 import { ModuleDetail } from './pages/admin/curriculum/ModuleDetail'
@@ -86,8 +92,14 @@ function App() {
           >
             <Route index element={<AdminHome />} />
             <Route path="approvals" element={<Approvals />} />
+            <Route path="cohorts" element={<Cohorts />} />
+            <Route path="students" element={<Students />} />
             <Route path="bundles" element={<Bundles />} />
             <Route path="grading" element={<Grading />} />
+            <Route path="content-feedback" element={<ContentFeedback />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="audit-log" element={<AuditLog />} />
+            <Route path="team" element={<Team />} />
             <Route path="curriculum" element={<TracksList />} />
             <Route path="curriculum/:trackSlug" element={<TrackDetail />} />
             <Route path="curriculum/:trackSlug/:moduleSlug" element={<ModuleDetail />} />

@@ -3,23 +3,34 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   BookIcon,
+  CalendarIcon,
   CheckCircleIcon,
   ChevronLeftIcon,
+  ClipboardIcon,
   ForgeMark,
   HomeIcon,
   InboxIcon,
   LogOutIcon,
   MenuIcon,
+  MessageIcon,
   PriceTagIcon,
   ShieldIcon,
+  TrendingIcon,
+  UsersIcon,
 } from '../icons'
 
 const navItems = [
   { to: '/admin', label: 'Home', icon: HomeIcon, end: true },
   { to: '/admin/approvals', label: 'Approvals', icon: InboxIcon, end: false },
+  { to: '/admin/cohorts', label: 'Cohorts', icon: CalendarIcon, end: false },
+  { to: '/admin/students', label: 'Students', icon: UsersIcon, end: false },
   { to: '/admin/bundles', label: 'Bundles & Pricing', icon: PriceTagIcon, end: false },
   { to: '/admin/curriculum', label: 'Curriculum', icon: BookIcon, end: false },
   { to: '/admin/grading', label: 'Grading', icon: CheckCircleIcon, end: false },
+  { to: '/admin/content-feedback', label: 'Content Feedback', icon: MessageIcon, end: false },
+  { to: '/admin/analytics', label: 'Analytics', icon: TrendingIcon, end: false },
+  { to: '/admin/audit-log', label: 'Audit Log', icon: ClipboardIcon, end: false },
+  { to: '/admin/team', label: 'Team', icon: ShieldIcon, end: false },
 ]
 
 /**

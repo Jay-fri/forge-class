@@ -83,7 +83,15 @@ export function Grading() {
       })
       .eq('id', selected.id)
     setSaving(false)
-    setSelectedId(null)
+
+    // Inbox-style: jump straight to the next item waiting, instead of
+    // dropping back to the list.
+    const next = submissions.find((s) => s.status !== 'graded' && s.id !== selected.id)
+    if (next) {
+      await select(next)
+    } else {
+      setSelectedId(null)
+    }
     await load()
   }
 

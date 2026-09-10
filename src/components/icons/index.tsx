@@ -15,6 +15,36 @@ const base = {
 
 /** Custom line-icon set for Forge. No default icon libraries — see brand reference. */
 
+export function UsersIcon({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <circle cx="9" cy="8" r="3" />
+      <path d="M3.5 19.5c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5" />
+      <path d="M16 8.5a2.5 2.5 0 1 0-1.2-4.7" />
+      <path d="M15 14.2c2.4.5 4 2.5 4 5.3" />
+    </svg>
+  )
+}
+
+export function CalendarIcon({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
+      <path d="M3.5 9.5h17M8 3v4M16 3v4" />
+    </svg>
+  )
+}
+
+export function ClipboardIcon({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <rect x="5" y="4.5" width="14" height="16" rx="2" />
+      <rect x="9" y="3" width="6" height="3" rx="1" />
+      <path d="M8.5 12h7M8.5 15.5h7M8.5 8.5h4" />
+    </svg>
+  )
+}
+
 export function HomeIcon({ className, size = 22 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
