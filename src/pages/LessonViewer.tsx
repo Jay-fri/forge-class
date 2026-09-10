@@ -207,26 +207,30 @@ export function LessonViewer() {
 
   return (
     <div className="flex min-h-svh flex-col bg-background">
-      <header className="flex items-center gap-3 border-b border-border px-4 py-3">
-        <Link to="/learn" className="text-text-secondary hover:text-text">
-          <ChevronLeftIcon size={22} />
-        </Link>
-        <h1 className="truncate font-heading text-lg text-text">{lesson.title}</h1>
+      <header className="border-b border-border px-4 py-3">
+        <div className="mx-auto flex max-w-2xl items-center gap-3">
+          <Link to="/learn" className="text-text-secondary hover:text-text">
+            <ChevronLeftIcon size={22} />
+          </Link>
+          <h1 className="truncate font-heading text-lg text-text">{lesson.title}</h1>
+        </div>
       </header>
 
-      <div className="flex gap-1.5 px-4 pt-3">
-        {sections.map((s, i) => (
-          <span
-            key={s.id}
-            className={`h-1.5 flex-1 rounded-full transition-colors ${
-              i < currentIndex || completed.has(s.id)
-                ? 'bg-success'
-                : i === currentIndex
-                  ? 'bg-accent'
-                  : 'bg-border'
-            }`}
-          />
-        ))}
+      <div className="px-4 pt-3">
+        <div className="mx-auto flex max-w-2xl gap-1.5">
+          {sections.map((s, i) => (
+            <span
+              key={s.id}
+              className={`h-1.5 flex-1 rounded-full transition-colors ${
+                i < currentIndex || completed.has(s.id)
+                  ? 'bg-success'
+                  : i === currentIndex
+                    ? 'bg-accent'
+                    : 'bg-border'
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
       <main
@@ -271,34 +275,43 @@ export function LessonViewer() {
         )}
       </main>
 
-      <button
-        type="button"
-        onClick={() => setAskAiOpen(true)}
-        aria-label="Ask AI"
-        className="fixed bottom-24 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent text-background shadow-lg hover:opacity-90"
-      >
-        <SparkleIcon size={22} />
-      </button>
-
-      <div className="fixed inset-x-0 bottom-0 flex gap-2 border-t border-border bg-background px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
-        {currentIndex > 0 && (
+      {/* Full-viewport, click-through overlay so the floating button can align
+          to the reading column's edge on wide screens instead of the raw
+          viewport edge, while staying pinned during scroll like a real FAB. */}
+      <div className="pointer-events-none fixed inset-0 z-10">
+        <div className="relative mx-auto h-full max-w-2xl">
           <button
             type="button"
-            onClick={goPrev}
-            aria-label="Previous section"
-            className="flex items-center justify-center rounded-lg border border-border px-4 text-text-secondary hover:bg-surface"
+            onClick={() => setAskAiOpen(true)}
+            aria-label="Ask AI"
+            className="pointer-events-auto absolute bottom-24 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent text-background shadow-lg hover:opacity-90"
           >
-            <ChevronLeftIcon size={20} />
+            <SparkleIcon size={22} />
           </button>
-        )}
-        <button
-          type="button"
-          onClick={goNext}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-accent px-4 py-3 font-medium text-background hover:opacity-90"
-        >
-          {currentIndex === sections.length - 1 ? 'Finish lesson' : 'Continue'}
-          <ChevronRightIcon size={18} />
-        </button>
+        </div>
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
+        <div className="mx-auto flex max-w-2xl gap-2">
+          {currentIndex > 0 && (
+            <button
+              type="button"
+              onClick={goPrev}
+              aria-label="Previous section"
+              className="flex items-center justify-center rounded-lg border border-border px-4 text-text-secondary hover:bg-surface"
+            >
+              <ChevronLeftIcon size={20} />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={goNext}
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-accent px-4 py-3 font-medium text-background hover:opacity-90"
+          >
+            {currentIndex === sections.length - 1 ? 'Finish lesson' : 'Continue'}
+            <ChevronRightIcon size={18} />
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -316,7 +329,7 @@ export function LessonViewer() {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed inset-x-0 bottom-0 z-30 h-[75svh] overflow-hidden rounded-t-2xl border-t border-border"
+              className="fixed inset-x-0 bottom-0 z-30 h-[75svh] overflow-hidden rounded-t-2xl border-t border-border md:inset-x-auto md:bottom-6 md:right-6 md:h-[70svh] md:w-105 md:rounded-2xl md:border"
             >
               <AskAiPanel
                 context={{

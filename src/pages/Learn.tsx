@@ -99,7 +99,7 @@ export function Learn() {
                   <p className="mb-1.5 text-xs uppercase tracking-wide text-text-secondary/70">
                     {module.name}
                   </p>
-                  <div className="flex flex-col gap-2">
+                  <div className="grid gap-2 sm:grid-cols-2">
                     {module.lessons.map((lesson) => (
                       <Link
                         key={lesson.id}
