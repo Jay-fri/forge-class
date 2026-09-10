@@ -324,10 +324,10 @@ export function TrackDetail() {
           <Link
             key={m.id}
             to={`/admin/curriculum/${track.slug}/${m.slug}`}
-            className="flex items-center justify-between rounded-xl border border-border bg-surface p-4 transition-colors hover:border-accent/40"
+            className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface p-4 transition-colors hover:border-accent/40"
           >
-            <p className="font-medium text-text">{m.name}</p>
-            <p className="text-sm text-text-secondary">
+            <p className="truncate font-medium text-text">{m.name}</p>
+            <p className="shrink-0 text-sm text-text-secondary">
               {m.lessonCount} lesson{m.lessonCount === 1 ? '' : 's'}
             </p>
           </Link>

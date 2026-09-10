@@ -106,23 +106,23 @@ export function ContentFeedback() {
               f.status === 'resolved' ? 'border-border bg-surface opacity-60' : 'border-border bg-surface'
             }`}
           >
-            <div className="flex items-start gap-3">
+            <div className="flex min-w-0 items-start gap-3">
               {f.feedback_type === 'confusing' ? (
                 <MessageIcon className="mt-0.5 shrink-0 text-accent" size={16} />
               ) : (
                 <PencilIcon className="mt-0.5 shrink-0 text-accent" size={16} />
               )}
-              <div>
+              <div className="min-w-0">
                 <Link
                   to={`/admin/curriculum/${f.trackSlug}/${f.moduleSlug}/${f.lessonSlug}`}
-                  className="text-text hover:text-accent hover:underline"
+                  className="truncate text-text hover:text-accent hover:underline"
                 >
                   {f.sectionTitle ?? 'Untitled section'}
                 </Link>
-                <p className="text-sm text-text-secondary">
+                <p className="truncate text-sm text-text-secondary">
                   {f.feedback_type === 'confusing' ? 'Confusing' : 'Typo'} · {f.studentName}
                 </p>
-                {f.note && <p className="mt-1 text-sm text-text-secondary">{f.note}</p>}
+                {f.note && <p className="mt-1 wrap-break-word text-sm text-text-secondary">{f.note}</p>}
               </div>
             </div>
             {f.status === 'open' && (

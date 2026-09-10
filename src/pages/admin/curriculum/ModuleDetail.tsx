@@ -260,10 +260,10 @@ export function ModuleDetail() {
           <Link
             key={l.id}
             to={`/admin/curriculum/${track.slug}/${module.slug}/${l.slug}`}
-            className="flex items-center justify-between rounded-xl border border-border bg-surface p-4 transition-colors hover:border-accent/40"
+            className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4 transition-colors hover:border-accent/40 sm:flex-row sm:items-center sm:justify-between"
           >
-            <p className="font-medium text-text">{l.title}</p>
-            <div className="flex items-center gap-2">
+            <p className="min-w-0 truncate font-medium text-text">{l.title}</p>
+            <div className="flex flex-wrap items-center gap-2">
               {l.status === 'draft' && (
                 <span className="rounded-full border border-accent/40 px-2 py-0.5 text-xs text-accent">
                   Draft

@@ -219,11 +219,11 @@ export function TracksList() {
             <Link
               key={t.id}
               to={`/admin/curriculum/${t.slug}`}
-              className="flex items-center justify-between rounded-xl border border-border bg-surface p-4 transition-colors hover:border-accent/40"
+              className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface p-4 transition-colors hover:border-accent/40"
             >
-              <div>
-                <p className="font-medium text-text">{t.name}</p>
-                <p className="text-sm text-text-secondary">
+              <div className="min-w-0">
+                <p className="truncate font-medium text-text">{t.name}</p>
+                <p className="truncate text-sm text-text-secondary">
                   {t.moduleCount} module{t.moduleCount === 1 ? '' : 's'}
                   {t.bundleIds.length > 0 &&
                     ` · in ${t.bundleIds
@@ -232,7 +232,7 @@ export function TracksList() {
                       .join(', ')}`}
                 </p>
               </div>
-              <span className="rounded-full border border-border px-2.5 py-1 text-xs capitalize text-text-secondary">
+              <span className="shrink-0 rounded-full border border-border px-2.5 py-1 text-xs capitalize text-text-secondary">
                 {t.level}
               </span>
             </Link>

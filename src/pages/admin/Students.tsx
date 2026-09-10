@@ -101,13 +101,13 @@ export function Students() {
           <button
             key={s.id}
             onClick={() => setSelectedId(s.id)}
-            className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3 text-left transition-colors hover:border-accent/40"
+            className="flex flex-col gap-2 rounded-xl border border-border bg-surface px-4 py-3 text-left transition-colors hover:border-accent/40 sm:flex-row sm:items-center sm:justify-between"
           >
-            <div>
-              <p className="font-medium text-text">{s.full_name}</p>
-              <p className="text-sm text-text-secondary">{s.email}</p>
+            <div className="min-w-0">
+              <p className="truncate font-medium text-text">{s.full_name}</p>
+              <p className="truncate text-sm text-text-secondary">{s.email}</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {s.bundleName && (
                 <span className="rounded-full border border-border px-2.5 py-1 text-xs text-text-secondary">
                   {s.bundleName}

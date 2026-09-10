@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { ErrorBoundary } from '../ErrorBoundary'
+import { InstallPrompt } from '../InstallPrompt'
 import { NotificationBell } from '../notifications/NotificationBell'
 import {
   BookIcon,
@@ -144,6 +145,10 @@ export function StudentShell() {
           ))}
         </ul>
       </nav>
+
+      <ErrorBoundary>
+        <InstallPrompt />
+      </ErrorBoundary>
     </div>
   )
 }

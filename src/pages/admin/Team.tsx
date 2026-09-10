@@ -87,23 +87,23 @@ export function Team() {
         {team.map((member) => (
           <div
             key={member.id}
-            className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3"
+            className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3"
           >
-            <div>
-              <p className="text-text">{member.full_name}</p>
-              <p className="text-sm text-text-secondary">{member.email}</p>
+            <div className="min-w-0">
+              <p className="truncate text-text">{member.full_name}</p>
+              <p className="truncate text-sm text-text-secondary">{member.email}</p>
             </div>
             {isOwner && member.id !== me?.id ? (
               <select
                 value={member.instructor_role ?? 'grader'}
                 onChange={(e) => changeRole(member, e.target.value as InstructorRole)}
-                className="rounded-lg border border-border bg-background px-2.5 py-1.5 text-sm capitalize text-text"
+                className="shrink-0 rounded-lg border border-border bg-background px-2.5 py-1.5 text-sm capitalize text-text"
               >
                 <option value="owner">Owner</option>
                 <option value="grader">Grader</option>
               </select>
             ) : (
-              <span className="rounded-full border border-border px-2.5 py-1 text-xs capitalize text-text-secondary">
+              <span className="shrink-0 rounded-full border border-border px-2.5 py-1 text-xs capitalize text-text-secondary">
                 {member.instructor_role ?? 'grader'}
                 {member.id === me?.id ? ' · you' : ''}
               </span>
@@ -135,15 +135,15 @@ export function Team() {
             </div>
             {searchError && <p className="text-sm text-red-400">{searchError}</p>}
             {searchResult && (
-              <div className="flex items-center justify-between rounded-lg border border-accent/30 bg-accent/5 px-3 py-2">
-                <div>
-                  <p className="text-text">{searchResult.full_name}</p>
-                  <p className="text-xs text-text-secondary">{searchResult.email}</p>
+              <div className="flex items-center justify-between gap-3 rounded-lg border border-accent/30 bg-accent/5 px-3 py-2">
+                <div className="min-w-0">
+                  <p className="truncate text-text">{searchResult.full_name}</p>
+                  <p className="truncate text-xs text-text-secondary">{searchResult.email}</p>
                 </div>
                 <button
                   onClick={() => promote(searchResult)}
                   disabled={busy}
-                  className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-background hover:opacity-90 disabled:opacity-60"
+                  className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-background hover:opacity-90 disabled:opacity-60"
                 >
                   Make grader
                 </button>

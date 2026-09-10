@@ -201,15 +201,15 @@ export function Cohorts() {
         {cohorts.map((c) => (
           <div
             key={c.id}
-            className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3"
+            className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3"
           >
             <button
               type="button"
               onClick={() => setSelectedId(c.id)}
-              className="text-left hover:text-accent"
+              className="min-w-0 text-left hover:text-accent"
             >
-              <p className="font-medium text-text">{c.name}</p>
-              <p className="text-sm text-text-secondary">
+              <p className="truncate font-medium text-text">{c.name}</p>
+              <p className="truncate text-sm text-text-secondary">
                 {c.bundleName} · {c.memberCount} student{c.memberCount === 1 ? '' : 's'} ·{' '}
                 {c.start_date} to {c.end_date}
               </p>
@@ -217,7 +217,7 @@ export function Cohorts() {
             <select
               value={c.status}
               onChange={(e) => updateStatus(c, e.target.value as CohortStatus)}
-              className="rounded-lg border border-border bg-background px-2.5 py-1.5 text-sm capitalize text-text"
+              className="shrink-0 rounded-lg border border-border bg-background px-2.5 py-1.5 text-sm capitalize text-text"
             >
               {statuses.map((s) => (
                 <option key={s} value={s}>
@@ -319,12 +319,12 @@ function CohortDetail({ cohortId, onBack }: { cohortId: string; onBack: () => vo
         {members.map((m) => (
           <div
             key={m.id}
-            className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3"
+            className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3"
           >
-            <div>
-              <p className="text-text">{m.student?.full_name ?? m.student_id}</p>
+            <div className="min-w-0">
+              <p className="truncate text-text">{m.student?.full_name ?? m.student_id}</p>
               {m.is_late_join && (
-                <p className="text-xs text-accent">
+                <p className="truncate text-xs text-accent">
                   Late join: {m.late_join_decision?.replace('_', ' ')}
                   {m.late_fee ? ` (${formatPrice(m.late_fee, 'NGN')})` : ''}
                 </p>
@@ -332,7 +332,7 @@ function CohortDetail({ cohortId, onBack }: { cohortId: string; onBack: () => vo
             </div>
             <button
               onClick={() => removeMember(m.id)}
-              className="text-sm text-red-400 hover:underline"
+              className="shrink-0 text-sm text-red-400 hover:underline"
             >
               Remove
             </button>

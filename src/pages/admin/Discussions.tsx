@@ -167,11 +167,11 @@ export function Discussions() {
             onClick={() => openThread(t)}
             className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-left transition-colors hover:border-accent/40"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex min-w-0 items-start gap-3">
               <MessageIcon className="mt-0.5 shrink-0 text-accent" size={16} />
-              <div>
-                <p className="text-text">{t.title}</p>
-                <p className="text-sm text-text-secondary">
+              <div className="min-w-0">
+                <p className="truncate text-text">{t.title}</p>
+                <p className="truncate text-sm text-text-secondary">
                   {t.authorName} · {t.contextLabel}
                 </p>
               </div>

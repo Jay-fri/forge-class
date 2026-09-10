@@ -348,9 +348,9 @@ export function LessonDetail() {
             />
           ) : (
             <div key={s.id} className="rounded-xl border border-border bg-surface p-4">
-              <div className="flex items-center justify-between">
-                {s.title && <h3 className="font-medium text-text">{s.title}</h3>}
-                <div className="ml-auto flex gap-2">
+              <div className="flex items-center justify-between gap-3">
+                {s.title && <h3 className="min-w-0 truncate font-medium text-text">{s.title}</h3>}
+                <div className="ml-auto flex shrink-0 gap-2">
                   <button
                     onClick={() => startEditSection(s)}
                     className="rounded-lg border border-border px-3 py-1 text-xs text-text-secondary hover:bg-background"
@@ -647,10 +647,10 @@ function QuizManager({ sectionId }: { sectionId: string }) {
           {quizzes.map((q) => (
             <li
               key={q.id}
-              className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm"
+              className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2 text-sm"
             >
-              <span className="text-text">{q.question}</span>
-              <span className="flex gap-2">
+              <span className="min-w-0 truncate text-text">{q.question}</span>
+              <span className="flex shrink-0 gap-2">
                 <button
                   onClick={() => startEdit(q)}
                   className="text-xs text-text-secondary hover:text-text"

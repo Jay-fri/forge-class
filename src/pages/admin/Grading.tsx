@@ -227,14 +227,14 @@ export function Grading() {
           <button
             key={s.id}
             onClick={() => select(s)}
-            className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3 text-left transition-colors hover:border-accent/40"
+            className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-left transition-colors hover:border-accent/40"
           >
-            <div>
-              <p className="font-medium text-text">{s.assignment?.title}</p>
-              <p className="text-sm text-text-secondary">{s.student?.full_name}</p>
+            <div className="min-w-0">
+              <p className="truncate font-medium text-text">{s.assignment?.title}</p>
+              <p className="truncate text-sm text-text-secondary">{s.student?.full_name}</p>
             </div>
             <span
-              className={`rounded-full border px-2.5 py-1 text-xs capitalize ${
+              className={`shrink-0 rounded-full border px-2.5 py-1 text-xs capitalize ${
                 s.status === 'in_review'
                   ? 'border-accent/40 text-accent'
                   : 'border-border text-text-secondary'
@@ -257,14 +257,14 @@ export function Grading() {
               <button
                 key={s.id}
                 onClick={() => select(s)}
-                className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3 text-left opacity-70 transition-colors hover:border-accent/40 hover:opacity-100"
+                className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-left opacity-70 transition-colors hover:border-accent/40 hover:opacity-100"
               >
-                <div>
-                  <p className="font-medium text-text">{s.assignment?.title}</p>
-                  <p className="text-sm text-text-secondary">{s.student?.full_name}</p>
+                <div className="min-w-0">
+                  <p className="truncate font-medium text-text">{s.assignment?.title}</p>
+                  <p className="truncate text-sm text-text-secondary">{s.student?.full_name}</p>
                 </div>
                 <span
-                  className={`rounded-full border px-2.5 py-1 text-xs ${
+                  className={`shrink-0 rounded-full border px-2.5 py-1 text-xs ${
                     s.passed
                       ? 'border-success/40 text-success'
                       : 'border-border text-text-secondary'

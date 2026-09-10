@@ -127,9 +127,9 @@ export function AssignmentEditor({
 
       {!editing && assignment && (
         <div className="mt-3 rounded-xl border border-border bg-surface p-4">
-          <div className="flex items-center justify-between">
-            <p className="font-medium text-text">{assignment.title}</p>
-            <div className="flex gap-2">
+          <div className="flex items-center justify-between gap-3">
+            <p className="min-w-0 truncate font-medium text-text">{assignment.title}</p>
+            <div className="flex shrink-0 gap-2">
               <button
                 onClick={startEdit}
                 className="rounded-lg border border-border px-3 py-1 text-xs text-text-secondary hover:bg-background"
