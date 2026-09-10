@@ -123,6 +123,35 @@ export function PriceTagIcon({ className, size = 22 }: IconProps) {
   )
 }
 
+export function TrophyIcon({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <path d="M7 4h10v5a5 5 0 0 1-10 0V4Z" />
+      <path d="M7 5H4v1.5a3 3 0 0 0 3 3M17 5h3v1.5a3 3 0 0 1-3 3" />
+      <path d="M12 14v3M9 20.5h6M9.5 20.5V17h5v3.5" />
+    </svg>
+  )
+}
+
+export function BookmarkIcon({
+  className,
+  size = 22,
+  filled = false,
+}: IconProps & { filled?: boolean }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      className={className}
+      {...base}
+      fill={filled ? 'currentColor' : 'none'}
+    >
+      <path d="M6 3.5h12a.5.5 0 0 1 .5.5v16.5l-6.5-4-6.5 4V4a.5.5 0 0 1 .5-.5Z" />
+    </svg>
+  )
+}
+
 export function CheckCircleIcon({ className, size = 22 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>

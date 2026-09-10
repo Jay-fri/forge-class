@@ -1,5 +1,5 @@
 // Hand-written to match the migrations under supabase/migrations/, through
-// 20260910080000_phase3_lesson_experience.sql.
+// 20260910120000_phase4_progress_motivation.sql.
 // Regenerate with `supabase gen types typescript --linked` once Docker/CLI
 // access to this project is available, and this file can be replaced.
 
@@ -230,6 +230,52 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['ai_usage']['Row']>
         Relationships: []
       }
+      badges: {
+        Row: {
+          id: string
+          slug: string
+          name: string
+          description: string
+          created_at: string
+        }
+        Insert: Partial<Database['public']['Tables']['badges']['Row']> & {
+          slug: string
+          name: string
+          description: string
+        }
+        Update: Partial<Database['public']['Tables']['badges']['Row']>
+        Relationships: []
+      }
+      user_badges: {
+        Row: {
+          id: string
+          user_id: string
+          badge_id: string
+          track_id: string | null
+          earned_at: string
+        }
+        Insert: Partial<Database['public']['Tables']['user_badges']['Row']> & {
+          user_id: string
+          badge_id: string
+        }
+        Update: Partial<Database['public']['Tables']['user_badges']['Row']>
+        Relationships: []
+      }
+      section_bookmarks: {
+        Row: {
+          id: string
+          user_id: string
+          section_id: string
+          note: string | null
+          created_at: string
+        }
+        Insert: Partial<Database['public']['Tables']['section_bookmarks']['Row']> & {
+          user_id: string
+          section_id: string
+        }
+        Update: Partial<Database['public']['Tables']['section_bookmarks']['Row']>
+        Relationships: []
+      }
       user_progress: {
         Row: {
           id: string
@@ -263,7 +309,12 @@ export interface Database {
       }
     }
     Views: Record<string, never>
-    Functions: Record<string, never>
+    Functions: {
+      complete_section: {
+        Args: { p_section_id: string }
+        Returns: void
+      }
+    }
     Enums: Record<string, never>
     CompositeTypes: Record<string, never>
   }

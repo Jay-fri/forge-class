@@ -5,6 +5,7 @@ import {
   CodeIcon,
   ForgeMark,
   HomeIcon,
+  LogOutIcon,
   SparkleIcon,
   TrendingIcon,
 } from '../icons'
@@ -25,7 +26,7 @@ const tabs = [
  * bar on mobile, thumb-reachable.
  */
 export function StudentShell() {
-  const { profile } = useAuth()
+  const { profile, signOut } = useAuth()
 
   return (
     <div className="flex min-h-svh flex-col bg-background lg:flex-row">
@@ -52,22 +53,35 @@ export function StudentShell() {
             </NavLink>
           ))}
         </nav>
-        {profile?.full_name && (
-          <p className="mt-auto truncate px-5 py-4 text-sm text-text-secondary">
-            {profile.full_name}
-          </p>
-        )}
+        <div className="mt-auto flex flex-col gap-1 px-3 pb-4">
+          {profile?.full_name && (
+            <p className="truncate px-2 py-2 text-sm text-text-secondary">
+              {profile.full_name}
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={() => signOut()}
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-text-secondary hover:bg-surface hover:text-text"
+          >
+            <LogOutIcon size={20} />
+            Log out
+          </button>
+        </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center gap-2 border-b border-border px-4 py-3 lg:hidden">
           <ForgeMark className="text-accent" size={22} />
           <span className="font-heading text-lg text-text">Forge</span>
-          {profile?.full_name && (
-            <span className="ml-auto text-sm text-text-secondary">
-              {profile.full_name}
-            </span>
-          )}
+          <button
+            type="button"
+            onClick={() => signOut()}
+            aria-label="Log out"
+            className="ml-auto text-text-secondary hover:text-text"
+          >
+            <LogOutIcon size={20} />
+          </button>
         </header>
 
         <main className="flex-1 overflow-y-auto pb-24 lg:pb-0">

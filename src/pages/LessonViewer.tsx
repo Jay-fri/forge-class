@@ -7,6 +7,8 @@ import { Markdown } from '../components/content/Markdown'
 import { QuizCheck } from '../components/content/QuizCheck'
 import { ContentFeedbackControl } from '../components/content/ContentFeedbackControl'
 import { AskAiPanel } from '../components/askai/AskAiPanel'
+import { Toast } from '../components/Toast'
+import { BookmarkControl } from '../components/content/BookmarkControl'
 import {
   CheckCircleIcon,
   ChevronLeftIcon,
@@ -41,8 +43,15 @@ export function LessonViewer() {
   const [completed, setCompleted] = useState<Set<string>>(new Set())
   const [showCompletion, setShowCompletion] = useState(false)
   const [askAiOpen, setAskAiOpen] = useState(false)
+  const [badgeToast, setBadgeToast] = useState<string | null>(null)
 
   const touchStartX = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (!badgeToast) return
+    const timer = setTimeout(() => setBadgeToast(null), 4000)
+    return () => clearTimeout(timer)
+  }, [badgeToast])
 
   useEffect(() => {
     async function load() {
@@ -129,18 +138,28 @@ export function LessonViewer() {
       data: { user },
     } = await supabase.auth.getUser()
     if (!user) return
-    await supabase
-      .from('user_progress')
-      .upsert(
-        {
-          user_id: user.id,
-          section_id: section.id,
-          status: 'completed',
-          completed_at: new Date().toISOString(),
-        },
-        { onConflict: 'user_id,section_id' },
-      )
+
+    const { count: beforeCount } = await supabase
+      .from('user_badges')
+      .select('id', { count: 'exact', head: true })
+
+    await supabase.rpc('complete_section', { p_section_id: section.id })
     setCompleted((prev) => new Set(prev).add(section.id))
+
+    const { count: afterCount } = await supabase
+      .from('user_badges')
+      .select('id', { count: 'exact', head: true })
+
+    if ((afterCount ?? 0) > (beforeCount ?? 0)) {
+      const { data: newest } = await supabase
+        .from('user_badges')
+        .select('badges(name)')
+        .order('earned_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      const badgeName = (newest as unknown as { badges: { name: string } } | null)?.badges?.name
+      if (badgeName) setBadgeToast(badgeName)
+    }
   }
 
   async function goNext() {
@@ -207,6 +226,8 @@ export function LessonViewer() {
 
   return (
     <div className="flex min-h-svh flex-col bg-background">
+      <Toast message={badgeToast} />
+
       <header className="border-b border-border px-4 py-3">
         <div className="mx-auto flex max-w-2xl items-center gap-3">
           <Link to="/learn" className="text-text-secondary hover:text-text">
@@ -270,6 +291,7 @@ export function LessonViewer() {
               <QuizCheck key={quiz.id} quiz={quiz} />
             ))}
 
+            <BookmarkControl sectionId={section.id} />
             <ContentFeedbackControl sectionId={section.id} />
           </motion.div>
         )}
