@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import type { Database } from '../lib/database.types'
-import { BookIcon, CheckCircleIcon, PencilIcon, SpinnerIcon } from '../components/icons'
+import { BookIcon, CheckCircleIcon, MessageIcon, PencilIcon, SpinnerIcon } from '../components/icons'
 
 type Track = Database['public']['Tables']['tracks']['Row']
 type Module = Database['public']['Tables']['modules']['Row']
@@ -99,7 +99,16 @@ export function Learn() {
       <div className="mt-6 flex flex-col gap-6">
         {tracks.map((track) => (
           <div key={track.id}>
-            <h2 className="font-heading text-lg text-text">{track.name}</h2>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-heading text-lg text-text">{track.name}</h2>
+              <Link
+                to={`/learn/discussion/${track.id}`}
+                className="flex shrink-0 items-center gap-1.5 text-sm text-accent hover:underline"
+              >
+                <MessageIcon size={14} />
+                Questions
+              </Link>
+            </div>
             {track.description && (
               <p className="mt-0.5 text-sm text-text-secondary">{track.description}</p>
             )}

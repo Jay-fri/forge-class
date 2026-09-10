@@ -1,5 +1,5 @@
 // Hand-written to match the migrations under supabase/migrations/, through
-// 20260910140000_phase6_instructor_dashboard.sql.
+// 20260910150000_phase7_community.sql.
 // Regenerate with `supabase gen types typescript --linked` once Docker/CLI
 // access to this project is available, and this file can be replaced.
 
@@ -299,6 +299,41 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['audit_log']['Row']>
         Relationships: []
       }
+      discussion_threads: {
+        Row: {
+          id: string
+          lesson_id: string | null
+          track_id: string | null
+          author_id: string
+          title: string
+          body: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: Partial<Database['public']['Tables']['discussion_threads']['Row']> & {
+          author_id: string
+          title: string
+          body: string
+        }
+        Update: Partial<Database['public']['Tables']['discussion_threads']['Row']>
+        Relationships: []
+      }
+      discussion_replies: {
+        Row: {
+          id: string
+          thread_id: string
+          author_id: string
+          body: string
+          created_at: string
+        }
+        Insert: Partial<Database['public']['Tables']['discussion_replies']['Row']> & {
+          thread_id: string
+          author_id: string
+          body: string
+        }
+        Update: Partial<Database['public']['Tables']['discussion_replies']['Row']>
+        Relationships: []
+      }
       assignments: {
         Row: {
           id: string
@@ -381,6 +416,10 @@ export interface Database {
       complete_section: {
         Args: { p_section_id: string }
         Returns: void
+      }
+      get_public_profiles: {
+        Args: { p_ids: string[] }
+        Returns: { id: string; full_name: string | null; role: UserRole }[]
       }
     }
     Enums: Record<string, never>

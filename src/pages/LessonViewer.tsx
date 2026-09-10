@@ -7,12 +7,14 @@ import { Markdown } from '../components/content/Markdown'
 import { QuizCheck } from '../components/content/QuizCheck'
 import { ContentFeedbackControl } from '../components/content/ContentFeedbackControl'
 import { AskAiPanel } from '../components/askai/AskAiPanel'
+import { DiscussionPanel } from '../components/community/DiscussionPanel'
 import { Toast } from '../components/Toast'
 import { BookmarkControl } from '../components/content/BookmarkControl'
 import {
   CheckCircleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  MessageIcon,
   SparkleIcon,
   SpinnerIcon,
 } from '../components/icons'
@@ -44,6 +46,7 @@ export function LessonViewer() {
   const [completed, setCompleted] = useState<Set<string>>(new Set())
   const [showCompletion, setShowCompletion] = useState(false)
   const [askAiOpen, setAskAiOpen] = useState(false)
+  const [discussionOpen, setDiscussionOpen] = useState(false)
   const [badgeToast, setBadgeToast] = useState<string | null>(null)
 
   const touchStartX = useRef<number | null>(null)
@@ -324,6 +327,14 @@ export function LessonViewer() {
         <div className="relative mx-auto h-full max-w-2xl">
           <button
             type="button"
+            onClick={() => setDiscussionOpen(true)}
+            aria-label="Questions"
+            className="pointer-events-auto absolute bottom-40 right-4 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-surface text-text shadow-lg hover:border-accent/40"
+          >
+            <MessageIcon size={20} />
+          </button>
+          <button
+            type="button"
             onClick={() => setAskAiOpen(true)}
             aria-label="Ask AI"
             className="pointer-events-auto absolute bottom-24 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent text-background shadow-lg hover:opacity-90"
@@ -381,6 +392,29 @@ export function LessonViewer() {
                 }}
                 onClose={() => setAskAiOpen(false)}
               />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {discussionOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setDiscussionOpen(false)}
+              className="fixed inset-0 z-20 bg-black/60"
+            />
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="fixed inset-x-0 bottom-0 z-30 h-[75svh] overflow-hidden rounded-t-2xl border-t border-border md:inset-x-auto md:bottom-6 md:right-6 md:h-[70svh] md:w-105 md:rounded-2xl md:border"
+            >
+              <DiscussionPanel lessonId={lesson.id} onClose={() => setDiscussionOpen(false)} />
             </motion.div>
           </>
         )}

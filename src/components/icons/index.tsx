@@ -45,6 +45,16 @@ export function ClipboardIcon({ className, size = 22 }: IconProps) {
   )
 }
 
+export function QuestionIcon({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <path d="M4 5.5h16v11H9.5L5 20v-3.5H4v-11Z" />
+      <path d="M9.8 9.5a2.2 2.2 0 1 1 3.1 2c-.7.4-1.1.9-1.1 1.6" />
+      <path d="M12 16h.01" />
+    </svg>
+  )
+}
+
 export function HomeIcon({ className, size = 22 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>

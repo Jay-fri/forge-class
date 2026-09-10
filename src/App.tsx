@@ -15,6 +15,7 @@ import { Practice } from './pages/Practice'
 import { Progress } from './pages/Progress'
 import { AskAI } from './pages/AskAI'
 import { AssignmentPage } from './pages/AssignmentPage'
+import { TrackDiscussion } from './pages/TrackDiscussion'
 import { AdminHome } from './pages/admin/AdminHome'
 import { Approvals } from './pages/admin/Approvals'
 import { Bundles } from './pages/admin/Bundles'
@@ -25,6 +26,7 @@ import { ContentFeedback } from './pages/admin/ContentFeedback'
 import { Analytics } from './pages/admin/Analytics'
 import { AuditLog } from './pages/admin/AuditLog'
 import { Team } from './pages/admin/Team'
+import { Discussions } from './pages/admin/Discussions'
 import { TracksList } from './pages/admin/curriculum/TracksList'
 import { TrackDetail } from './pages/admin/curriculum/TrackDetail'
 import { ModuleDetail } from './pages/admin/curriculum/ModuleDetail'
@@ -62,6 +64,7 @@ function App() {
             <Route path="/practice" element={<Practice />} />
             <Route path="/progress" element={<Progress />} />
             <Route path="/ask-ai" element={<AskAI />} />
+            <Route path="/learn/discussion/:trackId" element={<TrackDiscussion />} />
           </Route>
 
           <Route
@@ -97,6 +100,7 @@ function App() {
             <Route path="bundles" element={<Bundles />} />
             <Route path="grading" element={<Grading />} />
             <Route path="content-feedback" element={<ContentFeedback />} />
+            <Route path="discussions" element={<Discussions />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="audit-log" element={<AuditLog />} />
             <Route path="team" element={<Team />} />
