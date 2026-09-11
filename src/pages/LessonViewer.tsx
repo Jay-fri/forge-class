@@ -402,9 +402,10 @@ export function LessonViewer() {
             type="button"
             onClick={() => setAskAiOpen(true)}
             aria-label="Ask AI"
-            className="pointer-events-auto absolute bottom-24 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent text-background shadow-lg hover:opacity-90"
+            className="pointer-events-auto absolute bottom-24 right-4 flex h-12 items-center gap-2 rounded-full bg-accent px-4 text-background shadow-lg hover:opacity-90"
           >
-            <SparkleIcon size={22} />
+            <SparkleIcon size={20} />
+            <span className="text-sm font-medium">Ask AI</span>
           </button>
         </div>
       </div>
