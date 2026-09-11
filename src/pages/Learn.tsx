@@ -39,13 +39,27 @@ interface CatalogLesson {
   completed: boolean
 }
 
+interface SubGroup {
+  label: string
+  moduleSlug: string
+  lessons: CatalogLesson[]
+}
+
+interface ModuleTree extends Module {
+  lessons: CatalogLesson[]
+  assignmentId: string | null
+  complete: boolean
+  // Frontend's "JavaScript fundamentals" module is a pointer to the
+  // standalone track per the curriculum doc, rather than its own lessons —
+  // when present, this module renders that track's real content inline
+  // instead of showing up as a competing top-level phase.
+  absorbed?: { trackSlug: string; groups: SubGroup[] }
+}
+
 interface TrackTree extends Track {
   unlockBundleName: string | null
   complete: boolean
-  modules: (Module & {
-    lessons: CatalogLesson[]
-    assignmentId: string | null
-  })[]
+  modules: ModuleTree[]
 }
 
 interface ContinueTarget {
@@ -69,8 +83,27 @@ const levelLabel: Record<Track['level'], string> = {
   advanced: 'Advanced',
 }
 
+function moduleLessons(module: ModuleTree): CatalogLesson[] {
+  return module.absorbed ? module.absorbed.groups.flatMap((g) => g.lessons) : module.lessons
+}
+
 function findContinueTarget(track: TrackTree): ContinueTarget | null {
   for (const module of track.modules) {
+    if (module.absorbed) {
+      for (const group of module.absorbed.groups) {
+        for (const lesson of group.lessons) {
+          if (!lesson.completed) {
+            return {
+              trackSlug: module.absorbed.trackSlug,
+              moduleSlug: group.moduleSlug,
+              lessonSlug: lesson.slug,
+              lessonTitle: lesson.title,
+            }
+          }
+        }
+      }
+      continue
+    }
     for (const lesson of module.lessons) {
       if (!lesson.completed) {
         return { trackSlug: track.slug, moduleSlug: module.slug, lessonSlug: lesson.slug, lessonTitle: lesson.title }
@@ -156,17 +189,44 @@ export function Learn() {
         return unlockBundleIdsFor(trackId).some((id) => bundleIds.includes(id))
       }
 
-      const buildTrackTree = (t: Track): TrackTree => {
-        const modules = moduleList
+      const jsFundamentalsTrack = trackList.find((t) => t.slug === 'javascript-fundamentals') ?? null
+
+      const buildTrackTree = (t: Track, absorbJs: boolean): TrackTree => {
+        const modules: ModuleTree[] = moduleList
           .filter((m) => m.track_id === t.id)
-          .map((m) => ({
-            ...m,
-            lessons: (catalogLessons ?? [])
+          .map((m) => {
+            const lessons = (catalogLessons ?? [])
               .filter((l) => l.module_id === m.id)
-              .map((l) => ({ ...l, completed: isLessonComplete(l.id) })),
-            assignmentId: (moduleAssignments ?? []).find((a) => a.module_id === m.id)?.id ?? null,
-          }))
-        const allLessons = modules.flatMap((m) => m.lessons)
+              .map((l) => ({ ...l, completed: isLessonComplete(l.id) }))
+            const assignmentId = (moduleAssignments ?? []).find((a) => a.module_id === m.id)?.id ?? null
+
+            let absorbed: ModuleTree['absorbed']
+            if (absorbJs && jsFundamentalsTrack && m.slug === 'javascript-fundamentals-recap') {
+              const jsModules = moduleList
+                .filter((jm) => jm.track_id === jsFundamentalsTrack.id)
+                .sort((a, b) => a.order_index - b.order_index)
+              absorbed = {
+                trackSlug: jsFundamentalsTrack.slug,
+                groups: jsModules.map((jm) => ({
+                  label: jm.name,
+                  moduleSlug: jm.slug,
+                  lessons: (catalogLessons ?? [])
+                    .filter((l) => l.module_id === jm.id)
+                    .map((l) => ({ ...l, completed: isLessonComplete(l.id) })),
+                })),
+              }
+            }
+
+            const allModuleLessons = absorbed ? absorbed.groups.flatMap((g) => g.lessons) : lessons
+            return {
+              ...m,
+              lessons,
+              assignmentId,
+              absorbed,
+              complete: allModuleLessons.length > 0 && allModuleLessons.every((l) => l.completed),
+            }
+          })
+        const allLessons = modules.flatMap(moduleLessons)
         return {
           ...t,
           unlockBundleName: bundles.find((b) => unlockBundleIdsFor(t.id).includes(b.id))?.name ?? null,
@@ -181,24 +241,30 @@ export function Learn() {
       for (const bundleId of bundleIds) {
         const bundle = bundles.find((b) => b.id === bundleId)
         if (!bundle) continue
+        if (profile?.approval_status !== 'approved') continue
+
+        const bundleTrackSlugs = trackList.filter((t) => unlockBundleIdsFor(t.id).includes(bundleId)).map((t) => t.slug)
+        const shouldAbsorbJs = bundleTrackSlugs.includes('frontend') && bundleTrackSlugs.includes('javascript-fundamentals')
+
         const tracksForBundle = trackList
           .filter((t) => unlockBundleIdsFor(t.id).includes(bundleId))
           .filter((t) => !claimedTrackIds.has(t.id))
-          .filter(() => profile?.approval_status === 'approved')
+          // JS Fundamentals is absorbed into Frontend's own module list, not
+          // shown as a second, competing top-level phase.
+          .filter((t) => !(shouldAbsorbJs && t.slug === 'javascript-fundamentals'))
         if (tracksForBundle.length === 0) continue
         tracksForBundle.forEach((t) => claimedTrackIds.add(t.id))
+        if (shouldAbsorbJs && jsFundamentalsTrack) claimedTrackIds.add(jsFundamentalsTrack.id)
 
-        const phases = tracksForBundle.map(buildTrackTree)
-        const currentPhaseIndex = Math.max(
-          0,
-          phases.findIndex((p) => !p.complete),
-        )
-        const activePhase = phases[currentPhaseIndex === -1 ? phases.length - 1 : currentPhaseIndex]
+        const phases = tracksForBundle.map((t) => buildTrackTree(t, shouldAbsorbJs && t.slug === 'frontend'))
+        const firstIncomplete = phases.findIndex((p) => !p.complete)
+        const currentPhaseIndex = firstIncomplete === -1 ? phases.length - 1 : firstIncomplete
+        const activePhase = phases[currentPhaseIndex]
         builtPrograms.push({
           bundleId,
           bundleName: bundle.name,
           phases,
-          currentPhaseIndex: currentPhaseIndex === -1 ? phases.length - 1 : currentPhaseIndex,
+          currentPhaseIndex,
           continueTarget: activePhase ? findContinueTarget(activePhase) : null,
         })
       }
@@ -207,12 +273,12 @@ export function Learn() {
         .filter((t) => grantedTrackIds.has(t.id) && !claimedTrackIds.has(t.id))
         .map((t) => {
           claimedTrackIds.add(t.id)
-          return buildTrackTree(t)
+          return buildTrackTree(t, false)
         })
 
       const remaining = trackList
         .filter((t) => !claimedTrackIds.has(t.id))
-        .map((t) => ({ tree: buildTrackTree(t), accessible: canAccessViaBundle(t.id) }))
+        .map((t) => ({ tree: buildTrackTree(t, false), accessible: canAccessViaBundle(t.id) }))
 
       setPrograms(builtPrograms)
       setSoloTracks(solo)
@@ -377,46 +443,22 @@ function ProgramCard({ program }: { program: Program }) {
               </button>
 
               {open && (
-                <div className="flex flex-col gap-5 border-t border-border/70 px-4 pb-5 pt-4">
+                <div className="flex flex-col gap-3 border-t border-border/70 px-4 pb-5 pt-4">
                   {phase.description && (
-                    <p className="-mt-2 text-sm text-text-secondary">{phase.description}</p>
+                    <p className="-mt-1 mb-1 text-sm text-text-secondary">{phase.description}</p>
                   )}
-                  {phase.modules.map((module) => (
-                    <div key={module.id}>
-                      <p className="mb-1.5 text-xs uppercase tracking-wide text-text-secondary/70">
-                        {module.name}
-                      </p>
-                      <div className="grid gap-2 lg:grid-cols-2">
-                        {module.lessons.map((lesson) => (
-                          <Link
-                            key={lesson.id}
-                            to={`/learn/${phase.slug}/${module.slug}/${lesson.slug}`}
-                            className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 transition-colors hover:border-accent/60 hover:bg-accent/5"
-                          >
-                            <span
-                              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                                lesson.completed ? 'bg-success/15 text-success' : 'bg-accent/10 text-accent'
-                              }`}
-                            >
-                              {lesson.completed ? <CheckCircleIcon size={18} /> : <BookIcon size={16} />}
-                            </span>
-                            <span className="min-w-0 truncate font-medium text-text">{lesson.title}</span>
-                          </Link>
-                        ))}
-                        {module.lessons.length === 0 && (
-                          <p className="text-sm text-text-secondary">Content coming soon.</p>
-                        )}
-                      </div>
-                      {module.assignmentId && (
-                        <Link
-                          to={`/learn/assignment/${module.assignmentId}`}
-                          className="mt-2 flex items-center gap-2 text-sm text-accent hover:underline"
-                        >
-                          <PencilIcon size={14} />
-                          Module assignment
-                        </Link>
-                      )}
-                    </div>
+                  {phase.modules.map((module, mi) => (
+                    <ModuleSection
+                      key={module.id}
+                      module={module}
+                      index={mi}
+                      trackSlug={phase.slug}
+                      defaultOpen={
+                        !phase.complete &&
+                        phase.modules.slice(0, mi).every((m) => m.complete) &&
+                        !module.complete
+                      }
+                    />
                   ))}
                   <Link
                     to={`/learn/discussion/${phase.id}`}
@@ -432,6 +474,102 @@ function ProgramCard({ program }: { program: Program }) {
         })}
       </div>
     </div>
+  )
+}
+
+function ModuleSection({
+  module,
+  index,
+  trackSlug,
+  defaultOpen,
+}: {
+  module: ModuleTree
+  index: number
+  trackSlug: string
+  defaultOpen: boolean
+}) {
+  const [override, setOverride] = useState<boolean | null>(null)
+  const open = override ?? defaultOpen
+  const lessons = moduleLessons(module)
+
+  return (
+    <div className="rounded-lg border border-border/60 bg-surface/30">
+      <button
+        type="button"
+        onClick={() => setOverride(!open)}
+        className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left"
+      >
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span
+            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-medium ${
+              module.complete ? 'bg-success/15 text-success' : 'bg-border/50 text-text-secondary'
+            }`}
+          >
+            {module.complete ? <CheckCircleIcon size={12} /> : index + 1}
+          </span>
+          <p className="truncate text-sm text-text">{module.name}</p>
+        </div>
+        <ChevronRightIcon
+          size={14}
+          className={`shrink-0 text-text-secondary transition-transform ${open ? 'rotate-90' : ''}`}
+        />
+      </button>
+
+      {open && (
+        <div className="flex flex-col gap-4 border-t border-border/60 px-3 pb-4 pt-3">
+          {module.absorbed
+            ? module.absorbed.groups.map((group) => (
+                <div key={group.moduleSlug}>
+                  <p className="mb-1.5 text-xs uppercase tracking-wide text-text-secondary/70">{group.label}</p>
+                  <div className="grid gap-2 lg:grid-cols-2">
+                    {group.lessons.map((lesson) => (
+                      <LessonLink
+                        key={lesson.id}
+                        lesson={lesson}
+                        to={`/learn/${module.absorbed!.trackSlug}/${group.moduleSlug}/${lesson.slug}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))
+            : (
+              <div className="grid gap-2 lg:grid-cols-2">
+                {lessons.map((lesson) => (
+                  <LessonLink key={lesson.id} lesson={lesson} to={`/learn/${trackSlug}/${module.slug}/${lesson.slug}`} />
+                ))}
+                {lessons.length === 0 && <p className="text-sm text-text-secondary">Content coming soon.</p>}
+              </div>
+            )}
+          {module.assignmentId && (
+            <Link
+              to={`/learn/assignment/${module.assignmentId}`}
+              className="flex w-fit items-center gap-2 text-sm text-accent hover:underline"
+            >
+              <PencilIcon size={14} />
+              Module assignment
+            </Link>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function LessonLink({ lesson, to }: { lesson: CatalogLesson; to: string }) {
+  return (
+    <Link
+      to={to}
+      className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 transition-colors hover:border-accent/60 hover:bg-accent/5"
+    >
+      <span
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+          lesson.completed ? 'bg-success/15 text-success' : 'bg-accent/10 text-accent'
+        }`}
+      >
+        {lesson.completed ? <CheckCircleIcon size={18} /> : <BookIcon size={16} />}
+      </span>
+      <span className="min-w-0 truncate font-medium text-text">{lesson.title}</span>
+    </Link>
   )
 }
 
@@ -455,41 +593,15 @@ function SingleTrackCard({ track }: { track: TrackTree }) {
       </div>
       {track.description && <p className="mt-1 text-sm text-text-secondary">{track.description}</p>}
 
-      <div className="mt-5 flex flex-col gap-5 border-t border-border/70 pt-5">
-        {track.modules.map((module) => (
-          <div key={module.id}>
-            <p className="mb-1.5 text-xs uppercase tracking-wide text-text-secondary/70">{module.name}</p>
-            <div className="grid gap-2 lg:grid-cols-2">
-              {module.lessons.map((lesson) => (
-                <Link
-                  key={lesson.id}
-                  to={`/learn/${track.slug}/${module.slug}/${lesson.slug}`}
-                  className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 transition-colors hover:border-accent/60 hover:bg-accent/5"
-                >
-                  <span
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                      lesson.completed ? 'bg-success/15 text-success' : 'bg-accent/10 text-accent'
-                    }`}
-                  >
-                    {lesson.completed ? <CheckCircleIcon size={18} /> : <BookIcon size={16} />}
-                  </span>
-                  <span className="min-w-0 truncate font-medium text-text">{lesson.title}</span>
-                </Link>
-              ))}
-              {module.lessons.length === 0 && (
-                <p className="text-sm text-text-secondary">Content coming soon.</p>
-              )}
-            </div>
-            {module.assignmentId && (
-              <Link
-                to={`/learn/assignment/${module.assignmentId}`}
-                className="mt-2 flex items-center gap-2 text-sm text-accent hover:underline"
-              >
-                <PencilIcon size={14} />
-                Module assignment
-              </Link>
-            )}
-          </div>
+      <div className="mt-5 flex flex-col gap-3 border-t border-border/70 pt-5">
+        {track.modules.map((module, mi) => (
+          <ModuleSection
+            key={module.id}
+            module={module}
+            index={mi}
+            trackSlug={track.slug}
+            defaultOpen={track.modules.slice(0, mi).every((m) => m.complete) && !module.complete}
+          />
         ))}
       </div>
     </div>
