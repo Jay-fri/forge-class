@@ -1,8 +1,10 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { supabase } from '../lib/supabase'
 import type { Database, SubmissionType } from '../lib/database.types'
 import { Markdown } from '../components/content/Markdown'
+import { Toast } from '../components/Toast'
 import { CheckCircleIcon, ChevronLeftIcon, SpinnerIcon } from '../components/icons'
 
 const SandboxEmbed = lazy(() =>
@@ -26,6 +28,13 @@ export function AssignmentPage() {
   const [explanation, setExplanation] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [submittedToast, setSubmittedToast] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!submittedToast) return
+    const timer = setTimeout(() => setSubmittedToast(null), 4000)
+    return () => clearTimeout(timer)
+  }, [submittedToast])
 
   async function load() {
     const { data: assignmentRow } = await supabase
@@ -98,6 +107,7 @@ export function AssignmentPage() {
         submitted_at: new Date().toISOString(),
       }
 
+      const wasResubmit = Boolean(submission)
       if (submission) {
         const { error: err } = await supabase
           .from('submissions')
@@ -109,6 +119,7 @@ export function AssignmentPage() {
         if (err) throw err
       }
       await load()
+      setSubmittedToast(wasResubmit ? 'Resubmitted' : 'Submission received')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit.')
     } finally {
@@ -130,6 +141,8 @@ export function AssignmentPage() {
 
   return (
     <div className="student-view min-h-svh bg-background">
+      <Toast message={submittedToast} icon={<CheckCircleIcon className="text-success" size={18} />} />
+
       <header className="border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
         <div className="mx-auto flex max-w-4xl items-center gap-3">
           <Link to="/learn" className="forge-icon-tile h-9 w-9 rounded-lg text-text-secondary hover:text-text">
@@ -159,7 +172,11 @@ export function AssignmentPage() {
         )}
 
         {submission && (
-          <div
+          <motion.div
+            key={`${submission.status}-${submission.passed}`}
+            initial={{ opacity: 0, scale: 0.96, y: -6 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ type: 'spring', damping: 22, stiffness: 300 }}
             className={`forge-card rounded-xl px-4 py-3 ${
               submission.status === 'graded'
                 ? submission.passed
@@ -175,13 +192,13 @@ export function AssignmentPage() {
               Status: {submission.status === 'in_review' ? 'In review' : submission.status === 'graded' ? 'Graded' : 'Submitted'}
               {submission.status === 'graded' &&
                 submission.passed !== null &&
-                ` — ${submission.passed ? 'Passed' : 'Needs work'}`}
+                ` · ${submission.passed ? 'Passed' : 'Needs work'}`}
               {submission.score !== null && ` · Score: ${submission.score}`}
             </p>
             {submission.feedback && (
               <p className="mt-2 text-sm text-text-secondary">{submission.feedback}</p>
             )}
-          </div>
+          </motion.div>
         )}
 
         {canEdit && (

@@ -65,7 +65,7 @@ export function AssignmentEditor({
         starterCode = JSON.parse(draft.starterFilesText)
         setFilesError(null)
       } catch {
-        setFilesError('Invalid JSON — not saved until this is fixed.')
+        setFilesError('Invalid JSON, not saved until this is fixed.')
         setSaving(false)
         return
       }

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Database } from '../lib/database.types'
+import { AnimatedNumber } from '../components/AnimatedNumber'
 import {
   BookIcon,
   CalendarIcon,
@@ -230,18 +232,30 @@ export function Home() {
 
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
             <div className="forge-card p-3 sm:p-4">
-              <FlameIcon className={streak && streak.current > 0 ? 'text-accent' : 'text-text-secondary'} size={21} />
-              <p className="mt-2 font-heading text-2xl text-text">{streak?.current ?? 0}</p>
+              <motion.span
+                className="inline-block"
+                animate={streak && streak.current > 0 ? { scale: [1, 1.12, 1] } : undefined}
+                transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <FlameIcon className={streak && streak.current > 0 ? 'text-accent' : 'text-text-secondary'} size={21} />
+              </motion.span>
+              <p className="mt-2 font-heading text-2xl text-text">
+                <AnimatedNumber value={streak?.current ?? 0} />
+              </p>
               <p className="text-xs text-text-secondary">day streak</p>
             </div>
             <div className="forge-card p-3 sm:p-4">
               <TrendingIcon className="text-accent" size={21} />
-              <p className="mt-2 font-heading text-2xl text-text">{streak?.longest ?? 0}</p>
+              <p className="mt-2 font-heading text-2xl text-text">
+                <AnimatedNumber value={streak?.longest ?? 0} />
+              </p>
               <p className="text-xs text-text-secondary">best run</p>
             </div>
             <div className="forge-card p-3 sm:p-4">
               <TrophyIcon className="text-accent" size={21} />
-              <p className="mt-2 font-heading text-2xl text-text">{recentBadges.length}</p>
+              <p className="mt-2 font-heading text-2xl text-text">
+                <AnimatedNumber value={recentBadges.length} />
+              </p>
               <p className="text-xs text-text-secondary">recent wins</p>
             </div>
           </div>

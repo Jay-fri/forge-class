@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import { generateCertificate, downloadBlob } from '../lib/certificate'
 import type { Database } from '../lib/database.types'
+import { AnimatedNumber } from '../components/AnimatedNumber'
 import {
   BookmarkIcon,
   FlameIcon,
@@ -194,13 +196,23 @@ export function Progress() {
 
       <div className="mt-7 grid grid-cols-2 gap-3 lg:max-w-2xl">
         <div className="forge-card px-4 py-5">
-          <FlameIcon className={streak.current > 0 ? 'text-accent' : 'text-text-secondary'} size={22} />
-          <p className="mt-2 text-2xl font-medium text-text">{streak.current}</p>
+          <motion.span
+            className="inline-block"
+            animate={streak.current > 0 ? { scale: [1, 1.12, 1] } : undefined}
+            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <FlameIcon className={streak.current > 0 ? 'text-accent' : 'text-text-secondary'} size={22} />
+          </motion.span>
+          <p className="mt-2 text-2xl font-medium text-text">
+            <AnimatedNumber value={streak.current} />
+          </p>
           <p className="text-sm text-text-secondary">Day streak</p>
         </div>
         <div className="forge-card px-4 py-5">
           <TrophyIcon className="text-accent" size={22} />
-          <p className="mt-2 text-2xl font-medium text-text">{earnedBadgeIds.size}</p>
+          <p className="mt-2 text-2xl font-medium text-text">
+            <AnimatedNumber value={earnedBadgeIds.size} />
+          </p>
           <p className="text-sm text-text-secondary">Badges earned</p>
         </div>
       </div>

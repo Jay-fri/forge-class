@@ -434,7 +434,7 @@ function SectionForm({
       setDraft((d) => ({ ...d, sandbox_files: parsed }))
       setFilesError(null)
     } catch {
-      setFilesError('Invalid JSON — not saved until this is fixed.')
+      setFilesError('Invalid JSON, not saved until this is fixed.')
     }
   }
 
@@ -482,7 +482,7 @@ function SectionForm({
               </select>
             </label>
             <label className="flex flex-col gap-1 text-sm text-text-secondary">
-              Files (JSON — e.g. {'{"/index.html": "<h1>Hi</h1>"}'})
+              Files (JSON, e.g. {'{"/index.html": "<h1>Hi</h1>"}'})
               <textarea
                 value={filesText}
                 onChange={(e) => handleFilesTextChange(e.target.value)}
