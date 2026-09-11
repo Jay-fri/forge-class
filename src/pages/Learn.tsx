@@ -406,7 +406,7 @@ function ProgramCard({ program }: { program: Program }) {
       <div className="mt-6 flex flex-col gap-3 border-t border-border/70 pt-5">
         {program.phases.map((phase, i) => {
           const isCurrent = i === program.currentPhaseIndex
-          const defaultOpen = isCurrent
+          const defaultOpen = false
           const open = overrides[phase.id] ?? defaultOpen
           return (
             <div key={phase.id} className="rounded-xl border border-border/70 bg-background/30">
@@ -453,11 +453,7 @@ function ProgramCard({ program }: { program: Program }) {
                       module={module}
                       index={mi}
                       trackSlug={phase.slug}
-                      defaultOpen={
-                        !phase.complete &&
-                        phase.modules.slice(0, mi).every((m) => m.complete) &&
-                        !module.complete
-                      }
+                      defaultOpen={false}
                     />
                   ))}
                   <Link
@@ -559,7 +555,7 @@ function LessonLink({ lesson, to }: { lesson: CatalogLesson; to: string }) {
   return (
     <Link
       to={to}
-      className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 transition-colors hover:border-accent/60 hover:bg-accent/5"
+      className="flex min-w-0 items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 transition-colors hover:border-accent/60 hover:bg-accent/5"
     >
       <span
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
@@ -600,7 +596,7 @@ function SingleTrackCard({ track }: { track: TrackTree }) {
             module={module}
             index={mi}
             trackSlug={track.slug}
-            defaultOpen={track.modules.slice(0, mi).every((m) => m.complete) && !module.complete}
+            defaultOpen={false}
           />
         ))}
       </div>

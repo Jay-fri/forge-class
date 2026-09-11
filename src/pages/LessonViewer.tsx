@@ -51,6 +51,7 @@ export function LessonViewer() {
   const [badgeToast, setBadgeToast] = useState<string | null>(null)
 
   const touchStartX = useRef<number | null>(null)
+  const mainRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     if (!badgeToast) return
@@ -59,6 +60,14 @@ export function LessonViewer() {
   }, [badgeToast])
 
   useEffect(() => {
+    // Reset per-lesson state synchronously (before the async fetch below)
+    // so a stale showCompletion=true from the previous lesson can never
+    // flash for the newly-loaded one when navigating via "Next lesson".
+    setLoading(true)
+    setShowCompletion(false)
+    setCurrentIndex(0)
+    setCompleted(new Set())
+
     async function load() {
       const { data: trackRow } = await supabase
         .from('tracks')
@@ -194,6 +203,13 @@ export function LessonViewer() {
     load()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trackSlug, moduleSlug, lessonSlug])
+
+  // Jump the scrollable reading pane back to the top whenever the section
+  // or lesson changes, otherwise the next section renders below the fold
+  // at whatever scroll position the previous (often longer) one left off.
+  useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0 })
+  }, [currentIndex, lessonSlug])
 
   async function markCompleted(section: Section) {
     const {
@@ -343,6 +359,7 @@ export function LessonViewer() {
       </div>
 
       <main
+        ref={mainRef}
         className="flex-1 overflow-y-auto px-4 py-6 pb-28 sm:px-6 lg:px-10"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
