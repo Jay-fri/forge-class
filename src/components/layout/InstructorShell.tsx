@@ -46,7 +46,7 @@ export function InstructorShell() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <div className="flex h-svh overflow-hidden bg-background">
+    <div className="flex min-h-svh bg-background md:h-svh md:overflow-hidden">
       {mobileOpen && (
         <button
           type="button"
@@ -135,7 +135,7 @@ export function InstructorShell() {
           )}
         </header>
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 md:overflow-y-auto">
           <Outlet />
         </main>
       </div>

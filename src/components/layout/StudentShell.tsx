@@ -33,8 +33,8 @@ export function StudentShell() {
   const { profile, signOut } = useAuth()
 
   return (
-    <div className="forge-shell flex h-svh flex-col overflow-hidden bg-background lg:flex-row">
-      <aside className="hidden shrink-0 flex-col overflow-y-auto border-r border-border bg-background/85 lg:flex lg:w-64">
+    <div className="forge-shell flex min-h-svh flex-col bg-background lg:h-svh lg:flex-row lg:overflow-hidden">
+      <aside className="hidden shrink-0 flex-col border-r border-border bg-background/85 lg:flex lg:w-64 lg:overflow-y-auto">
         <div className="flex items-center gap-2 px-5 py-5">
           <span className="forge-icon-tile h-9 w-9 rounded-lg"><ForgeMark className="text-accent" size={21} /></span>
           <div>
@@ -125,7 +125,7 @@ export function StudentShell() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto pb-24 lg:pb-0">
+        <main className="flex-1 pb-24 lg:overflow-y-auto lg:pb-0">
           <div className="mx-auto w-full max-w-5xl">
             <Outlet />
           </div>
