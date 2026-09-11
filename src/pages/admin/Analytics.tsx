@@ -33,6 +33,7 @@ export function Analytics() {
     async function load() {
       const [
         { data: profiles },
+        { data: studentBundles },
         { data: approvalEvents },
         { data: submissions },
         { data: streaks },
@@ -44,6 +45,7 @@ export function Analytics() {
         { data: progress },
       ] = await Promise.all([
         supabase.from('profiles').select('*').eq('role', 'student'),
+        supabase.from('student_bundles').select('student_id, bundle_id'),
         supabase
           .from('audit_log')
           .select('entity_id, detail, created_at')
@@ -57,6 +59,11 @@ export function Analytics() {
         supabase.from('sections').select('id, title, lesson_id, order_index').order('order_index'),
         supabase.from('user_progress').select('user_id, section_id').eq('status', 'completed'),
       ])
+
+      const bundleIdsByStudent = new Map<string, string[]>()
+      for (const sb of studentBundles ?? []) {
+        bundleIdsByStudent.set(sb.student_id, [...(bundleIdsByStudent.get(sb.student_id) ?? []), sb.bundle_id])
+      }
 
       // Time to approval: created_at -> first approval_status_changed(to='approved') per student.
       const approvalDiffs: number[] = []
@@ -105,8 +112,8 @@ export function Analytics() {
       setTrackCompletions(
         (tracks ?? []).map((t) => {
           const bundleIds = (bundleTracks ?? []).filter((bt) => bt.track_id === t.id).map((bt) => bt.bundle_id)
-          const enrolledStudents = approvedStudents.filter(
-            (p) => p.assigned_bundle_id && bundleIds.includes(p.assigned_bundle_id),
+          const enrolledStudents = approvedStudents.filter((p) =>
+            (bundleIdsByStudent.get(p.id) ?? []).some((id) => bundleIds.includes(id)),
           )
           const moduleIds = modulesByTrack.get(t.id) ?? []
           const lessonIds = moduleIds.flatMap((mId) => lessonsByModule.get(mId) ?? [])

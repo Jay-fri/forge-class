@@ -252,14 +252,18 @@ function CohortDetail({ cohortId, onBack }: { cohortId: string; onBack: () => vo
       setLoading(false)
       return
     }
-    const [{ data: memberRows }, { data: profiles }] = await Promise.all([
+    const [{ data: memberRows }, { data: bundleStudents }] = await Promise.all([
       supabase.from('cohort_memberships').select('*').eq('cohort_id', cohortId),
-      supabase
-        .from('profiles')
-        .select('*')
-        .eq('assigned_bundle_id', cohortRow.bundle_id)
-        .eq('approval_status', 'approved'),
+      supabase.from('student_bundles').select('student_id').eq('bundle_id', cohortRow.bundle_id),
     ])
+    const bundleStudentIds = (bundleStudents ?? []).map((sb) => sb.student_id)
+    const { data: profiles } = bundleStudentIds.length
+      ? await supabase
+          .from('profiles')
+          .select('*')
+          .in('id', bundleStudentIds)
+          .eq('approval_status', 'approved')
+      : { data: [] as Profile[] }
     setMembers(
       (memberRows ?? []).map((m) => ({ ...m, student: profiles?.find((p) => p.id === m.student_id) })),
     )

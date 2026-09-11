@@ -1,5 +1,5 @@
 // Hand-written to match the migrations under supabase/migrations/, through
-// 20260910190000_phase9_notifications.sql.
+// 20260911090000_multi_bundle_access.sql.
 // Regenerate with `supabase gen types typescript --linked` once Docker/CLI
 // access to this project is available, and this file can be replaced.
 
@@ -48,7 +48,6 @@ export interface Database {
           full_name: string | null
           role: UserRole
           approval_status: ApprovalStatus
-          assigned_bundle_id: string | null
           instructor_role: InstructorRole | null
           whatsapp_group_invited_at: string | null
           welcome_video_watched_at: string | null
@@ -60,6 +59,34 @@ export interface Database {
           email: string
         }
         Update: Partial<Database['public']['Tables']['profiles']['Row']>
+        Relationships: []
+      }
+      student_bundles: {
+        Row: {
+          id: string
+          student_id: string
+          bundle_id: string
+          granted_at: string
+        }
+        Insert: Partial<Database['public']['Tables']['student_bundles']['Row']> & {
+          student_id: string
+          bundle_id: string
+        }
+        Update: Partial<Database['public']['Tables']['student_bundles']['Row']>
+        Relationships: []
+      }
+      student_track_grants: {
+        Row: {
+          id: string
+          student_id: string
+          track_id: string
+          granted_at: string
+        }
+        Insert: Partial<Database['public']['Tables']['student_track_grants']['Row']> & {
+          student_id: string
+          track_id: string
+        }
+        Update: Partial<Database['public']['Tables']['student_track_grants']['Row']>
         Relationships: []
       }
       cohorts: {

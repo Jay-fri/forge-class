@@ -12,7 +12,7 @@ export function Signup() {
   const navigate = useNavigate()
 
   const [step, setStep] = useState<'bundle' | 'details'>('bundle')
-  const [bundleId, setBundleId] = useState<string | null>(null)
+  const [bundleIds, setBundleIds] = useState<string[]>([])
 
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -24,11 +24,11 @@ export function Signup() {
   // Pre-select a bundle if the student arrived from a landing-page card,
   // and skip straight to account details.
   useEffect(() => {
-    if (bundlesLoading || !bundles.length || step !== 'bundle' || bundleId) return
+    if (bundlesLoading || !bundles.length || step !== 'bundle' || bundleIds.length) return
     const preselectSlug = searchParams.get('bundle')
     const preselected = bundles.find((b) => b.slug === preselectSlug)
     if (preselected) {
-      setBundleId(preselected.id)
+      setBundleIds([preselected.id])
       setStep('details')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -44,7 +44,12 @@ export function Signup() {
     return <Navigate to="/pending" replace />
   }
 
-  const selectedBundle = bundles.find((b) => b.id === bundleId) ?? null
+  const selectedBundles = bundles.filter((b) => bundleIds.includes(b.id))
+  const totalPrice = selectedBundles.reduce((sum, b) => sum + b.price, 0)
+
+  function toggleBundle(id: string) {
+    setBundleIds((prev) => (prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id]))
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -54,7 +59,7 @@ export function Signup() {
       email,
       password,
       fullName,
-      bundleId,
+      bundleIds,
     )
     setSubmitting(false)
     if (error) {
@@ -93,8 +98,8 @@ export function Signup() {
           <p className="page-kicker">Step 1 of 2</p>
           <h1 className="font-heading text-4xl text-text">Pick your bundle</h1>
           <p className="text-sm text-text-secondary">
-            You'll see the price now, and payment is arranged over WhatsApp
-            after you sign up.
+            Select one or more. You'll see the price now, and payment is
+            arranged over WhatsApp after you sign up.
           </p>
         </div>
 
@@ -110,9 +115,9 @@ export function Signup() {
               <button
                 key={b.id}
                 type="button"
-                onClick={() => setBundleId(b.id)}
+                onClick={() => toggleBundle(b.id)}
                 className={`flex min-h-32 flex-col items-start gap-2 rounded-2xl border px-4 py-4 text-left transition-colors ${
-                  bundleId === b.id
+                  bundleIds.includes(b.id)
                     ? 'border-accent bg-accent/10'
                     : 'border-border bg-surface hover:border-accent/40'
                 }`}
@@ -134,11 +139,18 @@ export function Signup() {
           </div>
         )}
 
+        {selectedBundles.length > 0 && (
+          <p className="mt-4 text-sm text-text-secondary">
+            {selectedBundles.length} selected: total{' '}
+            <span className="text-accent">{formatPrice(totalPrice, selectedBundles[0].currency)}</span>
+          </p>
+        )}
+
         <button
           type="button"
-          disabled={!bundleId}
+          disabled={bundleIds.length === 0}
           onClick={() => setStep('details')}
-          className="forge-button mt-8 w-full disabled:opacity-40 sm:w-auto"
+          className="forge-button mt-4 w-full disabled:opacity-40 sm:w-auto"
         >
           Continue
         </button>
@@ -159,10 +171,10 @@ export function Signup() {
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
           <span className="forge-icon-tile h-12 w-12"><ForgeMark className="text-accent" size={28} /></span>
           <p className="page-kicker">Step 2 of 2</p><h1 className="font-heading text-3xl text-text">Create your account</h1>
-          {selectedBundle && (
+          {selectedBundles.length > 0 && (
             <p className="text-sm text-text-secondary">
-              {selectedBundle.name}:{' '}
-              {formatPrice(selectedBundle.price, selectedBundle.currency)}{' '}
+              {selectedBundles.map((b) => b.name).join(', ')}:{' '}
+              {formatPrice(totalPrice, selectedBundles[0].currency)}{' '}
               <button
                 type="button"
                 onClick={() => setStep('bundle')}

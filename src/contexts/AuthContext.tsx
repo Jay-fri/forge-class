@@ -15,13 +15,14 @@ interface AuthContextValue {
   session: Session | null
   user: User | null
   profile: Profile | null
+  bundleIds: string[]
   loading: boolean
   signInWithPassword: (email: string, password: string) => Promise<{ error: string | null }>
   signUpWithPassword: (
     email: string,
     password: string,
     fullName: string,
-    bundleId: string | null,
+    bundleIds: string[],
   ) => Promise<{ error: string | null; needsEmailConfirmation: boolean }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
@@ -32,15 +33,16 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
+  const [bundleIds, setBundleIds] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
 
   async function loadProfile(userId: string) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
+    const [{ data }, { data: bundleRows }] = await Promise.all([
+      supabase.from('profiles').select('*').eq('id', userId).single(),
+      supabase.from('student_bundles').select('bundle_id').eq('student_id', userId),
+    ])
     setProfile(data ?? null)
+    setBundleIds((bundleRows ?? []).map((b) => b.bundle_id))
   }
 
   useEffect(() => {
@@ -65,6 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await loadProfile(nextSession.user.id)
         } else {
           setProfile(null)
+          setBundleIds([])
         }
         setLoading(false)
       },
@@ -85,12 +88,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email: string,
     password: string,
     fullName: string,
-    bundleId: string | null,
+    bundleIds: string[],
   ) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName, assigned_bundle_id: bundleId } },
+      options: { data: { full_name: fullName, bundle_ids: bundleIds } },
     })
     if (error) return { error: error.message, needsEmailConfirmation: false }
     // If email confirmation is required, signUp succeeds but returns no
@@ -112,6 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session,
         user: session?.user ?? null,
         profile,
+        bundleIds,
         loading,
         signInWithPassword,
         signUpWithPassword,

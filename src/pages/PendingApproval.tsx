@@ -13,22 +13,24 @@ interface PreviewSection {
 }
 
 export function PendingApproval() {
-  const { profile, signOut } = useAuth()
-  const [bundleName, setBundleName] = useState<string | null>(null)
-  const [bundlePrice, setBundlePrice] = useState<string | null>(null)
+  const { user, signOut } = useAuth()
+  const [bundleNames, setBundleNames] = useState<string[]>([])
+  const [totalPrice, setTotalPrice] = useState<string | null>(null)
   const [preview, setPreview] = useState<PreviewSection | null>(null)
 
   useEffect(() => {
-    if (profile?.assigned_bundle_id) {
+    if (user) {
       supabase
-        .from('bundles')
-        .select('name, price, currency')
-        .eq('id', profile.assigned_bundle_id)
-        .single()
+        .from('student_bundles')
+        .select('bundles(name, price, currency)')
+        .eq('student_id', user.id)
         .then(({ data }) => {
-          if (!data) return
-          setBundleName(data.name)
-          setBundlePrice(formatPrice(data.price, data.currency))
+          const bundles = ((data ?? []) as unknown as { bundles: { name: string; price: number; currency: string } }[])
+            .map((row) => row.bundles)
+            .filter(Boolean)
+          if (bundles.length === 0) return
+          setBundleNames(bundles.map((b) => b.name))
+          setTotalPrice(formatPrice(bundles.reduce((sum, b) => sum + b.price, 0), bundles[0].currency))
         })
     }
 
@@ -41,7 +43,10 @@ export function PendingApproval() {
       .then(({ data }) => {
         if (data?.[0]) setPreview(data[0])
       })
-  }, [profile?.assigned_bundle_id])
+  }, [user])
+
+  const bundleName = bundleNames.length > 0 ? bundleNames.join(', ') : null
+  const bundlePrice = totalPrice
 
   const message = encodeURIComponent(
     bundleName

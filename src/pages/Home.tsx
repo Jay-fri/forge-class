@@ -81,24 +81,21 @@ export function Home() {
         ((badgeRows ?? []) as unknown as { badges: Badge }[]).map((b) => b.badges).filter(Boolean),
       )
 
-      if (profile?.assigned_bundle_id) {
-        const { data: memberships } = await supabase
-          .from('cohort_memberships')
-          .select('cohorts(name, end_date)')
-          .eq('student_id', user.id)
-          .eq('bundle_id', profile.assigned_bundle_id)
-        const cohorts = ((memberships ?? []) as unknown as { cohorts: { name: string; end_date: string } }[])
-          .map((m) => m.cohorts)
-          .filter(Boolean)
-        if (cohorts.length > 0) {
-          const soonest = cohorts.reduce((a, b) => (a.end_date < b.end_date ? a : b))
-          const daysLeft = daysUntil(soonest.end_date)
-          const allEnded = cohorts.every((c) => daysUntil(c.end_date) < 0)
-          if (allEnded) {
-            setCohortWarning({ cohortName: soonest.name, daysLeft, ended: true })
-          } else if (daysLeft <= 7) {
-            setCohortWarning({ cohortName: soonest.name, daysLeft, ended: false })
-          }
+      const { data: memberships } = await supabase
+        .from('cohort_memberships')
+        .select('cohorts(name, end_date)')
+        .eq('student_id', user.id)
+      const cohorts = ((memberships ?? []) as unknown as { cohorts: { name: string; end_date: string } }[])
+        .map((m) => m.cohorts)
+        .filter(Boolean)
+      if (cohorts.length > 0) {
+        const soonest = cohorts.reduce((a, b) => (a.end_date < b.end_date ? a : b))
+        const daysLeft = daysUntil(soonest.end_date)
+        const allEnded = cohorts.every((c) => daysUntil(c.end_date) < 0)
+        if (allEnded) {
+          setCohortWarning({ cohortName: soonest.name, daysLeft, ended: true })
+        } else if (daysLeft <= 7) {
+          setCohortWarning({ cohortName: soonest.name, daysLeft, ended: false })
         }
       }
 

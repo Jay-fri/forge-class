@@ -46,7 +46,7 @@ export function InstructorShell() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <div className="flex min-h-svh bg-background">
+    <div className="flex h-svh overflow-hidden bg-background">
       {mobileOpen && (
         <button
           type="button"
@@ -57,7 +57,7 @@ export function InstructorShell() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-30 flex flex-col border-r border-border bg-surface transition-all duration-200 md:static ${
+        className={`fixed inset-y-0 left-0 z-30 flex flex-col overflow-y-auto border-r border-border bg-surface transition-all duration-200 md:static ${
           collapsed ? 'md:w-[76px]' : 'md:w-64'
         } ${mobileOpen ? 'w-64 translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
@@ -117,7 +117,7 @@ export function InstructorShell() {
         </div>
       </aside>
 
-      <div className="flex min-h-svh flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center gap-3 border-b border-border px-4 py-3 md:hidden">
           <button
             type="button"
