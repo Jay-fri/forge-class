@@ -295,6 +295,36 @@ export function ClockIcon({ className, size = 22 }: IconProps) {
   )
 }
 
+export function AlertIcon({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <path d="M12 4 21 19.5H3L12 4Z" strokeLinejoin="round" />
+      <path d="M12 10.5v4" />
+      <path d="M12 17.3h.01" />
+    </svg>
+  )
+}
+
+export function LightbulbIcon({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <path d="M9 18h6" />
+      <path d="M10 21h4" />
+      <path d="M12 3a6 6 0 0 0-3.5 10.9c.6.45.9 1.05.9 1.7v.4h5.2v-.4c0-.65.3-1.25.9-1.7A6 6 0 0 0 12 3Z" />
+    </svg>
+  )
+}
+
+export function HandTapIcon({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <path d="M9 12.5V7a1.5 1.5 0 0 1 3 0v4" />
+      <path d="M12 11V5.5a1.5 1.5 0 0 1 3 0V11" />
+      <path d="M15 11.2V7a1.5 1.5 0 0 1 3 0v7c0 3.3-2.2 6-6 6-2.3 0-3.6-.7-4.7-2.1L4.6 14a1.4 1.4 0 0 1 2-2l2.4 2" />
+    </svg>
+  )
+}
+
 export function SpinnerIcon({ className, size = 22 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className={className} fill="none">

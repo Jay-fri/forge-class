@@ -11,13 +11,37 @@ import { DiscussionPanel } from '../components/community/DiscussionPanel'
 import { Toast } from '../components/Toast'
 import { BookmarkControl } from '../components/content/BookmarkControl'
 import {
+  AlertIcon,
   CheckCircleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  CodeIcon,
+  HandTapIcon,
+  LightbulbIcon,
   MessageIcon,
   SparkleIcon,
   SpinnerIcon,
 } from '../components/icons'
+
+const sectionTypeMeta = {
+  concept: { label: 'Concept', icon: LightbulbIcon },
+  code_example: { label: 'Code example', icon: CodeIcon },
+  try_it: { label: 'Try it', icon: HandTapIcon },
+  common_mistake: { label: 'Common mistake', icon: AlertIcon },
+  check_in: null,
+} as const
+
+function SectionTypeBadge({ type }: { type: Section['section_type'] }) {
+  const meta = sectionTypeMeta[type]
+  if (!meta) return null
+  const Icon = meta.icon
+  return (
+    <p className="flex items-center gap-1.5 page-kicker">
+      <Icon size={14} />
+      {meta.label}
+    </p>
+  )
+}
 
 type Lesson = Database['public']['Tables']['lessons']['Row']
 type Section = Database['public']['Tables']['sections']['Row']
@@ -372,10 +396,23 @@ export function LessonViewer() {
             transition={{ duration: 0.25 }}
             className="forge-card mx-auto flex max-w-4xl flex-col gap-5 p-5 sm:p-8 lg:p-10"
           >
-            {section.title && (
+            {section.title ? (
               <div><p className="page-kicker">Section {currentIndex + 1}</p><h2 className="mt-1 font-heading text-3xl text-text">{section.title}</h2></div>
+            ) : (
+              <SectionTypeBadge type={section.section_type} />
             )}
-            {section.content && <Markdown>{section.content}</Markdown>}
+
+            {section.content && section.section_type === 'common_mistake' ? (
+              <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
+                <Markdown>{section.content}</Markdown>
+              </div>
+            ) : section.content && section.section_type === 'try_it' ? (
+              <div className="rounded-xl border border-success/30 bg-success/5 p-4">
+                <Markdown>{section.content}</Markdown>
+              </div>
+            ) : (
+              section.content && <Markdown>{section.content}</Markdown>
+            )}
 
             {section.sandbox_files && (
               <Suspense

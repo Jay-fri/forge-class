@@ -146,7 +146,7 @@ export function LessonDetail() {
   }
 
   function startCreateSection() {
-    setSectionDraft({ title: '', content: '' })
+    setSectionDraft({ title: '', content: '', section_type: 'concept' })
     setCreatingSection(true)
     setEditingSectionId(null)
     setError(null)
@@ -162,6 +162,7 @@ export function LessonDetail() {
           lesson_id: lesson.id,
           title: sectionDraft.title || null,
           content: sectionDraft.content || null,
+          section_type: sectionDraft.section_type || 'concept',
           sandbox_template: sectionDraft.sandbox_template || null,
           sandbox_files: sectionDraft.sandbox_files || null,
           order_index: sections.length,
@@ -173,6 +174,7 @@ export function LessonDetail() {
           .update({
             title: sectionDraft.title,
             content: sectionDraft.content,
+            section_type: sectionDraft.section_type || 'concept',
             sandbox_template: sectionDraft.sandbox_template || null,
             sandbox_files: sectionDraft.sandbox_files || null,
           })
@@ -441,6 +443,22 @@ function SectionForm({
   return (
     <div className="grid gap-4 rounded-xl border border-border bg-surface p-4 lg:grid-cols-2">
       <div className="flex flex-col gap-3">
+        <label className="flex flex-col gap-1 text-sm text-text-secondary">
+          Type
+          <select
+            value={draft.section_type ?? 'concept'}
+            onChange={(e) =>
+              setDraft((d) => ({ ...d, section_type: e.target.value as Section['section_type'] }))
+            }
+            className="w-fit rounded-lg border border-border bg-background px-3 py-2 text-text"
+          >
+            <option value="concept">Concept</option>
+            <option value="code_example">Code example</option>
+            <option value="try_it">Try it</option>
+            <option value="check_in">Check-in (pairs with a quiz below)</option>
+            <option value="common_mistake">Common mistake</option>
+          </select>
+        </label>
         <label className="flex flex-col gap-1 text-sm text-text-secondary">
           Title (optional)
           <input

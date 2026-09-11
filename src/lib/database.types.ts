@@ -203,6 +203,7 @@ export interface Database {
           order_index: number
           sandbox_template: string | null
           sandbox_files: Record<string, string> | null
+          section_type: 'concept' | 'code_example' | 'try_it' | 'check_in' | 'common_mistake'
           created_at: string
           updated_at: string
         }
