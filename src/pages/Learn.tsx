@@ -3,11 +3,30 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Database } from '../lib/database.types'
-import { BookIcon, CheckCircleIcon, LockIcon, MessageIcon, PencilIcon, SpinnerIcon } from '../components/icons'
+import {
+  BookIcon,
+  CheckCircleIcon,
+  LockIcon,
+  MessageIcon,
+  PencilIcon,
+  SparkleIcon,
+  SpinnerIcon,
+} from '../components/icons'
 
 type Track = Database['public']['Tables']['tracks']['Row']
 type Module = Database['public']['Tables']['modules']['Row']
 type Bundle = Database['public']['Tables']['bundles']['Row']
+
+// Same contact number used on the pending-approval screen for payment
+// arrangement, reused here as the general "buy a bundle" channel.
+const WHATSAPP_NUMBER = '2348101593762'
+
+function purchaseLink(trackName: string, bundleName: string | null) {
+  const message = bundleName
+    ? `Hi! I'd like to purchase the ${bundleName} bundle to get access to ${trackName}.`
+    : `Hi! I'd like to purchase access to ${trackName}.`
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
+}
 
 interface CatalogLesson {
   id: string
@@ -135,20 +154,19 @@ export function Learn() {
     )
   }
 
+  const myTracks = tracks.filter((t) => t.unlocked)
+  const otherTracks = tracks.filter((t) => !t.unlocked)
+
   return (
     <div className="page-frame">
       <p className="page-kicker">Track catalog</p><h1 className="page-title">Learn</h1>
-      <p className="page-intro">
-        Pick up where you left off, or browse what's available across every track.
-      </p>
+      <p className="page-intro">Pick up where you left off across the tracks you have access to.</p>
 
       <div className="mt-8 flex flex-col gap-5">
-        {tracks.map((track) => (
+        {myTracks.map((track) => (
           <div
             key={track.id}
-            className={`rounded-2xl border px-4 py-5 shadow-lg shadow-black/10 sm:px-6 sm:py-6 ${
-              track.unlocked ? 'border-border bg-surface/40' : 'border-border bg-surface/10'
-            }`}
+            className="rounded-2xl border border-border bg-surface/40 px-4 py-5 shadow-lg shadow-black/10 sm:px-6 sm:py-6"
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
@@ -156,32 +174,17 @@ export function Learn() {
                 <span className="rounded-full border border-border px-2 py-0.5 text-xs text-text-secondary">
                   {levelLabel[track.level]}
                 </span>
-                {!track.unlocked && (
-                  <span className="flex items-center gap-1 rounded-full border border-accent/30 bg-accent/5 px-2 py-0.5 text-xs text-accent">
-                    <LockIcon size={11} />
-                    Locked
-                  </span>
-                )}
               </div>
-              {track.unlocked && (
-                <Link
-                  to={`/learn/discussion/${track.id}`}
-                  className="flex shrink-0 items-center gap-1.5 text-sm text-accent hover:underline"
-                >
-                  <MessageIcon size={14} />
-                  Questions
-                </Link>
-              )}
+              <Link
+                to={`/learn/discussion/${track.id}`}
+                className="flex shrink-0 items-center gap-1.5 text-sm text-accent hover:underline"
+              >
+                <MessageIcon size={14} />
+                Questions
+              </Link>
             </div>
             {track.description && (
               <p className="mt-1 text-sm text-text-secondary">{track.description}</p>
-            )}
-            {!track.unlocked && (
-              <p className="mt-1.5 text-sm text-text-secondary">
-                {track.unlockBundleName
-                  ? `Included in ${track.unlockBundleName}. Here's what's inside.`
-                  : "You don't have access to this track yet. Here's what's inside."}
-              </p>
             )}
 
             <div className="mt-5 flex flex-col gap-5 border-t border-border/70 pt-5">
@@ -191,58 +194,27 @@ export function Learn() {
                     {module.name}
                   </p>
                   <div className="grid gap-2 lg:grid-cols-2">
-                    {module.lessons.map((lesson) => {
-                      const reachable = track.unlocked || lesson.is_free_preview
-                      const content = (
-                        <>
-                          <span
-                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                              lesson.completed
-                                ? 'bg-success/15 text-success'
-                                : reachable
-                                  ? 'bg-accent/10 text-accent'
-                                  : 'bg-border/40 text-text-secondary'
-                            }`}
-                          >
-                            {lesson.completed ? (
-                              <CheckCircleIcon size={18} />
-                            ) : reachable ? (
-                              <BookIcon size={16} />
-                            ) : (
-                              <LockIcon size={15} />
-                            )}
-                          </span>
-                          <span
-                            className={`min-w-0 truncate ${reachable ? 'font-medium text-text' : 'text-text-secondary'}`}
-                          >
-                            {lesson.title}
-                          </span>
-                          {lesson.is_free_preview && !track.unlocked && (
-                            <span className="ml-auto shrink-0 rounded-full bg-accent/10 px-2 py-0.5 text-xs text-accent">
-                              Preview
-                            </span>
-                          )}
-                        </>
-                      )
-                      return reachable ? (
-                        <Link
-                          key={lesson.id}
-                          to={`/learn/${track.slug}/${module.slug}/${lesson.slug}`}
-                          className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 transition-colors hover:border-accent/60 hover:bg-accent/5"
+                    {module.lessons.map((lesson) => (
+                      <Link
+                        key={lesson.id}
+                        to={`/learn/${track.slug}/${module.slug}/${lesson.slug}`}
+                        className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 transition-colors hover:border-accent/60 hover:bg-accent/5"
+                      >
+                        <span
+                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                            lesson.completed ? 'bg-success/15 text-success' : 'bg-accent/10 text-accent'
+                          }`}
                         >
-                          {content}
-                        </Link>
-                      ) : (
-                        <div
-                          key={lesson.id}
-                          className="flex items-center gap-3 rounded-xl border border-border/60 bg-background px-4 py-3 opacity-70"
-                        >
-                          {content}
-                        </div>
-                      )
-                    })}
+                          {lesson.completed ? <CheckCircleIcon size={18} /> : <BookIcon size={16} />}
+                        </span>
+                        <span className="min-w-0 truncate font-medium text-text">{lesson.title}</span>
+                      </Link>
+                    ))}
+                    {module.lessons.length === 0 && (
+                      <p className="text-sm text-text-secondary">Content coming soon.</p>
+                    )}
                   </div>
-                  {module.assignmentId && track.unlocked && (
+                  {module.assignmentId && (
                     <Link
                       to={`/learn/assignment/${module.assignmentId}`}
                       className="mt-2 flex items-center gap-2 text-sm text-accent hover:underline"
@@ -257,12 +229,67 @@ export function Learn() {
           </div>
         ))}
 
-        {tracks.length === 0 && (
+        {myTracks.length === 0 && (
           <p className="py-10 text-center text-text-secondary">
             No tracks available yet, check back soon.
           </p>
         )}
       </div>
+
+      {otherTracks.length > 0 && (
+        <>
+          <h2 className="mt-12 font-heading text-xl text-text">Other courses available</h2>
+          <p className="mt-1 text-sm text-text-secondary">
+            Message us on WhatsApp to purchase and get access.
+          </p>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {otherTracks.map((track) => {
+              const previewLessons = track.modules
+                .flatMap((m) => m.lessons.map((l) => ({ ...l, moduleSlug: m.slug })))
+                .filter((l) => l.is_free_preview)
+              return (
+                <div key={track.id} className="rounded-2xl border border-border bg-surface/20 p-5">
+                  <div className="flex items-center gap-2">
+                    <LockIcon size={14} className="text-text-secondary" />
+                    <h3 className="font-heading text-lg text-text">{track.name}</h3>
+                    <span className="rounded-full border border-border px-2 py-0.5 text-xs text-text-secondary">
+                      {levelLabel[track.level]}
+                    </span>
+                  </div>
+                  {track.description && (
+                    <p className="mt-1.5 text-sm text-text-secondary">{track.description}</p>
+                  )}
+
+                  {previewLessons.length > 0 && (
+                    <div className="mt-3 flex flex-col gap-1.5">
+                      {previewLessons.map((lesson) => (
+                        <Link
+                          key={lesson.id}
+                          to={`/learn/${track.slug}/${lesson.moduleSlug}/${lesson.slug}`}
+                          className="flex items-center gap-2 text-sm text-accent hover:underline"
+                        >
+                          <SparkleIcon size={13} />
+                          Free preview: {lesson.title}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
+                  <a
+                    href={purchaseLink(track.name, track.unlockBundleName)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="forge-button mt-4 w-full justify-center px-4 py-2.5 text-sm"
+                  >
+                    {track.unlockBundleName ? `Purchase ${track.unlockBundleName}` : 'Purchase access'}
+                  </a>
+                </div>
+              )
+            })}
+          </div>
+        </>
+      )}
     </div>
   )
 }

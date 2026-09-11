@@ -45,6 +45,7 @@ export function LessonViewer() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [completed, setCompleted] = useState<Set<string>>(new Set())
   const [showCompletion, setShowCompletion] = useState(false)
+  const [nextLessonPath, setNextLessonPath] = useState<string | null>(null)
   const [askAiOpen, setAskAiOpen] = useState(false)
   const [discussionOpen, setDiscussionOpen] = useState(false)
   const [badgeToast, setBadgeToast] = useState<string | null>(null)
@@ -93,12 +94,62 @@ export function LessonViewer() {
       }
       setLesson(lessonRow)
 
-      const { data: assignmentRow } = await supabase
+      const { data: lessonAssignment } = await supabase
         .from('assignments')
         .select('id')
         .eq('lesson_id', lessonRow.id)
         .maybeSingle()
-      setAssignmentId(assignmentRow?.id ?? null)
+      let resolvedAssignmentId = lessonAssignment?.id ?? null
+
+      // Figure out where "next" goes: the next lesson in this module, or
+      // the first lesson of the next module, so finishing a lesson can go
+      // straight there instead of dropping back to the track catalog.
+      const { data: siblingLessons } = await supabase
+        .from('lessons')
+        .select('slug, order_index')
+        .eq('module_id', moduleRow.id)
+        .order('order_index')
+      const siblings = siblingLessons ?? []
+      const myIndex = siblings.findIndex((l) => l.slug === lessonSlug)
+      const isLastInModule = myIndex === -1 || myIndex === siblings.length - 1
+
+      let nextPath: string | null = null
+      if (!isLastInModule) {
+        nextPath = `/learn/${trackSlug}/${moduleSlug}/${siblings[myIndex + 1].slug}`
+      } else {
+        const { data: moduleRows } = await supabase
+          .from('modules')
+          .select('id, slug, order_index')
+          .eq('track_id', trackRow.id)
+          .order('order_index')
+        const modules = moduleRows ?? []
+        const modIndex = modules.findIndex((m) => m.slug === moduleSlug)
+        if (modIndex !== -1 && modIndex < modules.length - 1) {
+          const nextModule = modules[modIndex + 1]
+          const { data: nextModuleLessons } = await supabase
+            .from('lessons')
+            .select('slug')
+            .eq('module_id', nextModule.id)
+            .order('order_index')
+            .limit(1)
+          if (nextModuleLessons && nextModuleLessons.length > 0) {
+            nextPath = `/learn/${trackSlug}/${nextModule.slug}/${nextModuleLessons[0].slug}`
+          }
+        }
+
+        // Assignments usually cap off a module rather than a single lesson,
+        // so only check module-level once we know this is the last lesson.
+        if (!resolvedAssignmentId) {
+          const { data: moduleAssignment } = await supabase
+            .from('assignments')
+            .select('id')
+            .eq('module_id', moduleRow.id)
+            .maybeSingle()
+          resolvedAssignmentId = moduleAssignment?.id ?? null
+        }
+      }
+      setNextLessonPath(nextPath)
+      setAssignmentId(resolvedAssignmentId)
 
       const { data: sectionRows } = await supabase
         .from('sections')
@@ -223,24 +274,38 @@ export function LessonViewer() {
         </motion.div>
         <h1 className="font-heading text-2xl text-text">Lesson complete</h1>
         <p className="text-text-secondary">Nice work, {lesson.title} is done.</p>
-        {assignmentId && (
-          <Link
-            to={`/learn/assignment/${assignmentId}`}
-          className="forge-button mt-2 px-5"
-          >
-            View assignment
-          </Link>
-        )}
-        <Link
-          to="/learn"
-          className={
-            assignmentId
-              ? 'text-sm text-text-secondary hover:text-text hover:underline'
-              : 'forge-button mt-2 px-5'
-          }
-        >
-          Back to Learn
-        </Link>
+
+        <div className="mt-2 flex flex-col items-center gap-3">
+          {nextLessonPath ? (
+            <Link to={nextLessonPath} className="forge-button gap-1.5 px-5">
+              Next lesson
+              <ChevronRightIcon size={18} />
+            </Link>
+          ) : assignmentId ? (
+            <Link to={`/learn/assignment/${assignmentId}`} className="forge-button px-5">
+              View assignment
+            </Link>
+          ) : (
+            <Link to="/learn" className="forge-button px-5">
+              Back to Learn
+            </Link>
+          )}
+
+          {nextLessonPath && assignmentId && (
+            <Link
+              to={`/learn/assignment/${assignmentId}`}
+              className="text-sm text-text-secondary hover:text-text hover:underline"
+            >
+              View assignment
+            </Link>
+          )}
+
+          {(nextLessonPath || assignmentId) && (
+            <Link to="/learn" className="text-sm text-text-secondary hover:text-text hover:underline">
+              Back to Learn
+            </Link>
+          )}
+        </div>
       </div>
     )
   }
