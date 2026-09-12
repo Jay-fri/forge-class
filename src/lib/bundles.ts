@@ -14,7 +14,7 @@ export function useActiveBundles() {
       .from('bundles')
       .select('*')
       .eq('is_active', true)
-      .order('price', { ascending: true })
+      .order('order_index', { ascending: true })
       .then(({ data }) => {
         if (!active) return
         setBundles(data ?? [])

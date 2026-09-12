@@ -30,6 +30,7 @@ export interface Database {
           price: number
           currency: string
           is_active: boolean
+          order_index: number
           whatsapp_group_link: string | null
           created_at: string
           updated_at: string
