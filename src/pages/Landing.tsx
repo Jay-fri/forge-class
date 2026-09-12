@@ -34,14 +34,14 @@ export function Landing() {
       </header>
 
       {/* Hero */}
-      <section className="mx-auto grid max-w-6xl gap-10 px-5 pb-16 pt-10 sm:px-8 md:grid-cols-[.95fr_1.05fr] md:items-center md:pt-20 lg:gap-16 lg:pb-24">
-        <div className="relative">
+      <section className="mx-auto grid max-w-6xl gap-10 px-5 pb-16 pt-10 sm:px-8 md:grid-cols-[1.1fr_.9fr] md:items-start md:gap-8 md:pt-20 lg:gap-14 lg:pb-24">
+        <div className="relative flex flex-col justify-center md:min-h-96">
           <p className="page-kicker">A practical coding cohort</p>
-          <h1 className="mt-3 font-heading text-5xl leading-[.94] text-text sm:text-6xl lg:text-7xl">
+          <h1 className="mt-3 font-heading text-5xl leading-[.95] text-text sm:text-6xl">
             Learn to code by actually{' '}
             <span className="text-accent">writing code</span>.
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-text-secondary">
+          <p className="mt-6 max-w-lg text-lg text-text-secondary">
             Short lessons, real code you run inline, and an AI that explains
             things differently when you're stuck. No wall of text, no setup,
             just you and the editor.
@@ -67,7 +67,12 @@ export function Landing() {
           </div>
         </div>
 
-        <div className="relative md:pl-4"><div className="absolute -inset-4 -z-10 rounded-[2rem] border border-accent/15 bg-accent/5" /><IdeMockup /></div>
+        <div className="relative md:pl-2">
+          <div className="absolute -inset-4 -z-10 rounded-4xl border border-accent/15 bg-accent/5" />
+          <div className="md:aspect-square">
+            <IdeMockup />
+          </div>
+        </div>
       </section>
 
       <section className="mx-auto grid max-w-6xl gap-3 px-5 pb-10 sm:grid-cols-3 sm:px-8">

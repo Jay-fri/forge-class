@@ -6,16 +6,16 @@
  */
 export function IdeMockup() {
   return (
-    <div className="w-full overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl shadow-black/40">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl shadow-black/40">
       {/* window chrome */}
-      <div className="flex items-center gap-2 border-b border-border bg-background px-4 py-3">
+      <div className="flex shrink-0 items-center gap-2 border-b border-border bg-background px-4 py-3">
         <span className="h-2.5 w-2.5 rounded-full bg-border" />
         <span className="h-2.5 w-2.5 rounded-full bg-border" />
         <span className="h-2.5 w-2.5 rounded-full bg-border" />
         <span className="ml-3 text-xs text-text-secondary">forge / lesson-03.jsx</span>
       </div>
 
-      <div className="flex text-[13px]">
+      <div className="flex flex-1 text-[13px]">
         {/* file tree */}
         <aside className="hidden w-40 shrink-0 border-r border-border bg-background/60 px-3 py-4 sm:block">
           <p className="mb-2 text-[11px] uppercase tracking-wide text-text-secondary/70">
@@ -32,15 +32,15 @@ export function IdeMockup() {
         </aside>
 
         {/* editor */}
-        <div className="flex-1">
-          <div className="flex border-b border-border bg-background/40 text-xs">
+        <div className="flex flex-1 flex-col">
+          <div className="flex shrink-0 border-b border-border bg-background/40 text-xs">
             <span className="border-r border-border bg-surface px-4 py-2 text-text">
               App.jsx
             </span>
             <span className="px-4 py-2 text-text-secondary">index.css</span>
           </div>
 
-          <pre className="overflow-x-auto px-4 py-4 font-mono leading-relaxed">
+          <pre className="flex-1 overflow-auto px-4 py-6 font-mono leading-loose">
             <code>
               <span className="text-text-secondary">1</span>
               {'  '}
